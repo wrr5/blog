@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Article</title>
+</head>
+<body>
+    <h1>写一篇文章</h1>
+    
+    {{if .error}}
+        <p style="color: red;">Error: {{.error}}</p>
+    {{end}}
+
+    <form action="/articles" method="POST">
+        <div>
+            <label for="title">标题:</label><br>
+            <input type="text" id="title" name="title" required style="width: 400px;">
+        </div>
+        <div>
+            <label for="content">内容:</label><br>
+            <textarea id="content" name="content" rows="10" cols="50" required></textarea>
+        </div>
+        <div>
+            <button type="submit">发布</button>
+        </div>
+    </form>
+    
+    <p><a href="/">回到首页</a></p>
+</body>
+</html>
