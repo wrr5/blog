@@ -7,7 +7,7 @@ import (
 )
 
 type Article struct {
-	UID       uint           `json:"uid" gorm:"primarykey;autoIncrement:true"`
+	Id        uint           `json:"id" gorm:"primarykey;autoIncrement:true"`
 	Title     string         `json:"title" gorm:"type:varchar(255);not null"`
 	Content   string         `json:"content" gorm:"type:text;not null"`
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"` // 自动创建时间

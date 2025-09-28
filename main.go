@@ -21,14 +21,21 @@ func main() {
 	DB = tools.InitDB("root", "123456")
 
 	articleHander := handlers.NewArticleHanders(DB)
-	homeHander := handlers.NewHomeHanders(DB)
 
-	// 首页
-	r.GET("/", homeHander.ShowHome)
+	// 博客列表
+	r.GET("/articles", articleHander.ShowArticleList)
 	// 发布博客
 	r.GET("/articles/new", articleHander.ShowCreateArticlePage)
-	// 提交博客
+	// 新增博客
 	r.POST("/articles", articleHander.CreateArticle)
+	// 查询博客详情
+	r.GET("/articles/:id", articleHander.ShowArticleDetail)
+	// 编辑博客
+	r.GET("/articles/:id/edit", articleHander.ShowArticleEdit)
+	// 更新博客
+	r.PUT("/articles/:id", articleHander.UpdateArticle)
+	// 更新博客
+	r.DELETE("/articles/:id", articleHander.DeleteArticle)
 
 	// 404处理
 	r.NoRoute(func(c *gin.Context) {

@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>博客详情</title>
 </head>
+
 <body>
-    
+    {{if .message}}
+    <h2>{{.editStatus}}</h2>
+    {{end}}
+    {{if .article}}
+    <h3>{{.article.Title}}</h3>
+    <p><b>{{.article.Content}}</b></p>
+    {{else}}
+    <p>暂无数据</p>
+    {{end}}
+    <a href="/articles/{{.article.Id}}/edit">编辑</a>
+    <a href="/articles/{{.article.Id}}" id="delete-link">删除</a>
+    <script>
+        const deleteLink = document.getElementById('delete-link');
+        deleteLink.addEventListener('click', function (e) {
+            e.preventDefault(); // 阻止默认的链接跳转
+
+            const url = this.getAttribute('href'); // 获取链接的URL
+
+            if (confirm('确定要删除这篇文章吗？')) {
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 如果需要CSRF令牌，可以在这里添加
+                        // 'X-CSRF-Token': 'your-csrf-token'
+                    }
+                })
+                    .then(response => {
+                        // 检查响应状态
+                        if (!response.ok) {
+                            throw new Error(`HTTP错误! 状态: ${response.status}`);
+                        }
+                        return response.json(); // 解析JSON响应
+                    })
+                    .then(data => {
+                        // 显示成功消息
+                        alert(data.message);
+                        window.location.href = '/articles'; // 跳转到文章列表
+                        // 或者如果当前页面就是文章列表，可以刷新页面
+                        // window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('删除请求失败！');
+                    });
+            }
+        });
+    </script>
 </body>
+
 </html>
