@@ -11,7 +11,7 @@ type User struct {
 	// UpdatedAt time.Time
 	// DeletedAt gorm.DeletedAt `gorm:"index"`
 	gorm.Model
-	Username string `json:"username" gorm:"uniqueIndex;size:50;not null"`
-	Email    string `json:"email" gorm:"uniqueIndex;size:100;not null"`
-	Password string `json:"password" gorm:"size:255;not null"`
+	Username string `json:"username" form:"username" gorm:"uniqueIndex;size:50;not null"`
+	Email    string `json:"email" form:"email" gorm:"uniqueIndex;size:100;not null"`
+	Password string `json:"password" form:"password" gorm:"size:255;not null"`
 }

@@ -20,14 +20,14 @@ func (h *ArticleHanders) ShowArticleList(c *gin.Context) {
 	var articles []models.Article
 	global.DB.Find(&articles)
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
+	c.HTML(http.StatusOK, "list.html", gin.H{
 		"title":    "文章列表",
 		"articles": articles,
 	})
 }
 
 func (h *ArticleHanders) ShowCreateArticlePage(c *gin.Context) {
-	c.HTML(http.StatusOK, "new.html", gin.H{})
+	c.HTML(http.StatusOK, "create.html", gin.H{})
 }
 
 func (h *ArticleHanders) CreateArticle(c *gin.Context) {
