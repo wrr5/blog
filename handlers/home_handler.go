@@ -1,18 +1,14 @@
 package handlers
 
-import (
-	// "net/http"
+// "net/http"
 
-	// "gitee.com/wwgzr/blog/models"
-	// "github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-)
+// "gitee.com/wwgzr/blog/models"
+// "github.com/gin-gonic/gin"
 
 // 文章处理组
 type HomeHanders struct {
-	db *gorm.DB
 }
 
-func NewHomeHanders(db *gorm.DB) *HomeHanders {
-	return &HomeHanders{db: db}
+func NewHomeHanders() *HomeHanders {
+	return &HomeHanders{}
 }

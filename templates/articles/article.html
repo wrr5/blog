@@ -17,8 +17,9 @@
     {{else}}
     <p>暂无数据</p>
     {{end}}
-    <a href="/articles/{{.article.Id}}/edit">编辑</a>
+    <a href="/articles/edit/{{.article.Id}}">编辑</a>
     <a href="/articles/{{.article.Id}}" id="delete-link">删除</a>
+    <a href="/articles">返回文章列表</a>
     <script>
         const deleteLink = document.getElementById('delete-link');
         deleteLink.addEventListener('click', function (e) {
