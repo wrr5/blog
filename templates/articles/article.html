@@ -8,17 +8,19 @@
 </head>
 
 <body>
-    {{if .message}}
-    <h2>{{.editStatus}}</h2>
-    {{end}}
     {{if .article}}
-    <h3>{{.article.Title}}  作者：{{.article.User.Username}}</h3>
+    <span>作者: {{.article.User.Username}}</span>
+    <span>发布时间: {{.article.CreatedAt.Format "2006-01-02"}}</span>
+    <h3>{{.article.Title}}</h3>
     <p><b>{{.article.Content}}</b></p>
     {{else}}
     <p>暂无数据</p>
     {{end}}
+    
+    {{if and .user_id (eq .user_id .article.UserID)}}
     <a href="/articles/{{.article.Id}}/edit">编辑</a>
     <a href="/articles/{{.article.Id}}" id="delete-link">删除</a>
+    {{end}}
     <a href="/articles">返回文章列表</a>
     <script>
         const deleteLink = document.getElementById('delete-link');
@@ -47,12 +49,10 @@
                         // 显示成功消息
                         alert(data.message);
                         window.location.href = '/articles'; // 跳转到文章列表
-                        // 或者如果当前页面就是文章列表，可以刷新页面
-                        // window.location.reload();
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('删除请求失败！');
+                        console.log(error.message);
+                        alert("无权操作此文章");
                     });
             }
         });

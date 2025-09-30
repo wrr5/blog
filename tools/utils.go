@@ -21,11 +21,12 @@ func CheckPasswordHash(password, hash string) bool {
 var jwtSecret = []byte("your-secret-key")
 
 // 生成 JWT Token
-func GenerateJWT(username string) (string, error) {
+func GenerateJWT(userID uint, username string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(72 * time.Hour) // 72小时过期
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id":  userID,
 		"username": username,
 		"exp":      expireTime.Unix(),
 	})

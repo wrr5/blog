@@ -75,14 +75,25 @@ func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
 	global.DB.Preload("User").First(&article, articleID)
 
 	c.HTML(http.StatusOK, "article.html", gin.H{
+		"user_id": c.GetUint("user_id"),
 		"article": article,
 	})
 }
 
 func (h *ArticleHanders) ShowArticleEdit(c *gin.Context) {
+	// 获取文章id
 	id := c.Param("id")
 	var article models.Article
 	global.DB.First(&article, id)
+
+	// 获取当前用户登陆的id
+	userID := c.GetUint("user_id")
+	if article.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"message": "无权操作此文章"})
+		c.Abort()
+		return
+	}
+
 	c.HTML(http.StatusOK, "edit.html", gin.H{
 		"article": article,
 	})
@@ -119,6 +130,16 @@ func (h *ArticleHanders) UpdateArticle(c *gin.Context) {
 func (h *ArticleHanders) DeleteArticle(c *gin.Context) {
 	id := c.Param("id")
 	var article models.Article
+	global.DB.First(&article, id)
+
+	// 获取当前用户登陆的id
+	userID := c.GetUint("user_id")
+	if article.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"message": "无权操作此文章"})
+		c.Abort()
+		return
+	}
+
 	global.DB.Delete(&article, id)
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "删除成功",

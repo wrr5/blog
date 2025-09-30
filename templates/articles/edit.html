@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <h3>正在编辑ID为{{.article.Id}}的文档</h3>
+    <h3>正在编辑ID为{{.article.Id}}的文章</h3>
     <form id="putForm" action="/articles/{{.article.Id}}">
         <div>
             <label for="putTitle">标题:</label>
@@ -23,7 +23,7 @@
             <label for="putAuthor">作者:</label>
             <input type="text" id="putAuthor" name="author" value="张三" required>
         </div> -->
-        <button type="submit">发送PUT请求</button>
+        <button type="submit">更新文章</button>
     </form>
 
     <script>
