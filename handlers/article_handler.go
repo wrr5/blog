@@ -27,7 +27,11 @@ func (h *ArticleHanders) ShowArticleList(c *gin.Context) {
 }
 
 func (h *ArticleHanders) ShowCreateArticlePage(c *gin.Context) {
-	c.HTML(http.StatusOK, "create.html", gin.H{})
+	if username, ok := c.Get("username"); ok {
+		c.HTML(http.StatusOK, "create.html", gin.H{
+			"username": username,
+		})
+	}
 }
 
 func (h *ArticleHanders) CreateArticle(c *gin.Context) {
@@ -35,27 +39,40 @@ func (h *ArticleHanders) CreateArticle(c *gin.Context) {
 	title := c.PostForm("title")
 	content := c.PostForm("content")
 
-	// 创建文章对象
-	article := models.Article{
-		Title:   title,
-		Content: content,
-	}
+	// 获取作者对象
+	var user models.User
+	if username, ok := c.Get("username"); ok {
+		result := global.DB.Where("username = ?", username).First(&user)
+		if result.Error != nil {
+			c.HTML(http.StatusOK, "create.html", gin.H{
+				"error": result.Error,
+			})
+			return
+		}
 
-	result := global.DB.Create(&article)
-	if result.Error != nil {
-		c.HTML(http.StatusOK, "new.html", gin.H{
-			"error": result.Error,
-		})
-		return
-	}
+		// 创建文章对象
+		article := models.Article{
+			Title:   title,
+			Content: content,
+			User:    user,
+		}
 
-	c.Redirect(http.StatusFound, "/articles")
+		result = global.DB.Create(&article)
+		if result.Error != nil {
+			c.HTML(http.StatusOK, "create.html", gin.H{
+				"error": result.Error,
+			})
+			return
+		}
+
+		c.Redirect(http.StatusFound, "/articles")
+	}
 }
 
 func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
 	var article models.Article
-	id := c.Param("id")
-	global.DB.First(&article, id)
+	articleID := c.Param("id")
+	global.DB.Preload("User").First(&article, articleID)
 
 	c.HTML(http.StatusOK, "article.html", gin.H{
 		"article": article,

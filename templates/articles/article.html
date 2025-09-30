@@ -12,7 +12,7 @@
     <h2>{{.editStatus}}</h2>
     {{end}}
     {{if .article}}
-    <h3>{{.article.Title}}</h3>
+    <h3>{{.article.Title}}  作者：{{.article.User.Username}}</h3>
     <p><b>{{.article.Content}}</b></p>
     {{else}}
     <p>暂无数据</p>

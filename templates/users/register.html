@@ -48,7 +48,7 @@
                 // 使用Fetch API提交表单
                 const formData = new FormData(this);
 
-                fetch('/users', {
+                fetch('/auth/register', {
                     method: 'POST',
                     body: formData
                 })

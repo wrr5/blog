@@ -99,7 +99,7 @@ func setupAuthRoutes(r *gin.Engine) {
 		// 显示注册页面 - GET /auth/register
 		authGroup.GET("/register", handlers.Register)
 
-		// 显示用户 - POST /auth/register
+		// 注册账号 - POST /auth/register
 		authGroup.POST("/register", handlers.CreateUser)
 
 		// 登出 - POST /auth/logout
