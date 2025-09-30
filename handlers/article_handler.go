@@ -84,7 +84,7 @@ func (h *ArticleHanders) ShowArticleEdit(c *gin.Context) {
 	// 获取文章id
 	id := c.Param("id")
 	var article models.Article
-	global.DB.First(&article, id)
+	global.DB.Preload("User").First(&article, id)
 
 	// 获取当前用户登陆的id
 	userID := c.GetUint("user_id")

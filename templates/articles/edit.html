@@ -4,28 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编辑文档</title>
+    <title>编辑文章</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+        * {
+            margin: 5px;
+        }
+    </style>
 </head>
 
 <body>
-    <h3>正在编辑ID为{{.article.Id}}的文章</h3>
-    <form id="putForm" action="/articles/{{.article.Id}}">
-        <div>
-            <label for="putTitle">标题:</label>
-            <input type="text" id="putTitle" name="title" value="{{.article.Title}}" required>
+    <div class="container text-center" style="width: 50%;">
+        <div class="row">
+            <h3>作者: {{.article.User.Username}}</h3>
+            <form id="putForm" action="/articles/{{.article.Id}}">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="putTitle" name="title" value="{{.article.Title}}" required>
+                    <label for="putTitle">标题</label>
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" id="putContent" name="content"
+                        style="height: 300px" required>{{.article.Content}}</textarea>
+                    <label for="putContent">内容</label>
+                </div>
+                <button type="submit" class="btn btn-success">更新文章</button>
+            </form>
         </div>
-        <div>
-            <label for="putContent">内容:</label>
-            <textarea id="putContent" name="content" required>{{.article.Content}}</textarea>
-        </div>
-        <!-- <div>
-            todo:
-            <label for="putAuthor">作者:</label>
-            <input type="text" id="putAuthor" name="author" value="张三" required>
-        </div> -->
-        <button type="submit">更新文章</button>
-    </form>
-
+    </div>
+    <script src="/static/js/bootstrap.bundle.js"></script>
     <script>
         // PUT请求处理
         document.getElementById('putForm').addEventListener('submit', function (e) {

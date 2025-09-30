@@ -1,29 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Create New Article</title>
-</head>
-<body>
-    <h1>作者：{{.username}}</h1>
-    
-    {{if .error}}
-        <p style="color: red;">Error: {{.error}}</p>
-    {{end}}
 
-    <form action="/articles" method="POST">
-        <div>
-            <label for="title">标题:</label><br>
-            <input type="text" id="title" name="title" required style="width: 400px;">
+<head>
+    <title>发布文章</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+        * {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center" style="width: 50%;">
+        <div class="row">
+            <h3>作者: {{.username}}</h3>
+            <form id="putForm" action="/articles">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="title" name="title" required>
+                    <label for="title">标题</label>
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" id="content" name="content" style="height: 300px"
+                        required></textarea>
+                    <label for="content">内容</label>
+                </div>
+                <button type="submit" class="btn btn-success">发布</button>
+                
+            <a href="/" class="btn btn-info">回到首页</a>
+            </form>
         </div>
-        <div>
-            <label for="content">内容:</label><br>
-            <textarea id="content" name="content" rows="10" cols="50" required></textarea>
-        </div>
-        <div>
-            <button type="submit">发布</button>
-        </div>
-    </form>
-    
-    <p><a href="/">回到首页</a></p>
+    </div>
+    <script src="/static/js/bootstrap.bundle.js"></script>
 </body>
+
 </html>
