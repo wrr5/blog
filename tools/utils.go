@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -29,4 +30,27 @@ func GenerateJWT(username string) (string, error) {
 		"exp":      expireTime.Unix(),
 	})
 	return token.SignedString(jwtSecret)
+}
+
+// 解析JWT Token
+func ParseJWT(tokenString string) (jwt.MapClaims, error) {
+	// 解析 token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// 验证签名方法
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("意外的签名方法: %v", token.Header["alg"])
+		}
+		return jwtSecret, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// 验证 token 是否有效
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, fmt.Errorf("无效的token")
+	}
 }

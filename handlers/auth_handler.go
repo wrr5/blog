@@ -18,7 +18,6 @@ func Login(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", gin.H{})
 	}
 	if c.Request.Method == "POST" {
-		// todo: 实现jwt验证进行登陆
 		var user models.User
 		result := global.DB.Where("email = ?", c.PostForm("email")).First(&user)
 		if result.Error != nil || !tools.CheckPasswordHash(c.PostForm("password"), user.Password) {
@@ -32,11 +31,22 @@ func Login(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"message": "登录成功",
-			"user":    user,
-			"token":   "Bearer " + token,
-		})
-	}
+		// 设置 HTTP-only Cookie
+		c.SetCookie("auth_token", "Bearer "+token, 3600*72, "/", "", false, true)
 
+		// c.JSON(http.StatusOK, gin.H{
+		// 	"message": "登录成功",
+		// 	"user":    user,
+		// })
+		c.Redirect(http.StatusFound, "/articles")
+	}
+}
+
+func Logout(c *gin.Context) {
+	// 清除cookie
+	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+
+	// 返回成功信息或重定向到登录页
+	// c.JSON(http.StatusOK, gin.H{"message": "退出成功"})
+	c.Redirect(http.StatusFound, "/auth/login")
 }

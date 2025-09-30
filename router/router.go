@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitee.com/wwgzr/blog/handlers"
+	"gitee.com/wwgzr/blog/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,6 +37,9 @@ func setupArticleRoutes(r *gin.Engine) {
 	})
 	// 文章路由组
 	articleGroup := r.Group("/articles")
+
+	// 使用用户认证中间件
+	articleGroup.Use(middleware.AuthMiddleware())
 	{
 		// 博客列表
 		articleGroup.GET("", articleHander.ShowArticleList)
@@ -57,6 +61,9 @@ func setupArticleRoutes(r *gin.Engine) {
 func setupUserRoutes(r *gin.Engine) {
 	// 用户资源路由组
 	userGroup := r.Group("/users")
+
+	// 使用用户认证中间件
+	userGroup.Use(middleware.AuthMiddleware())
 	{
 		// 获取用户列表 - GET /users
 		userGroup.GET("", handlers.GetUsers)
@@ -86,8 +93,14 @@ func setupAuthRoutes(r *gin.Engine) {
 		// 执行登录 - POST /auth/login
 		authGroup.POST("/login", handlers.Login)
 
+		// 退出登录 - GET /auth/logout
+		authGroup.GET("/logout", middleware.AuthMiddleware(), handlers.Logout)
+
 		// 显示注册页面 - GET /auth/register
 		authGroup.GET("/register", handlers.Register)
+
+		// 显示用户 - POST /auth/register
+		authGroup.POST("/register", handlers.CreateUser)
 
 		// 登出 - POST /auth/logout
 		// authGroup.POST("/logout", handlers.Logout)
