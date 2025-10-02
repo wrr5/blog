@@ -44,7 +44,7 @@
             height: 500,
             uploadImage: true,
             upload: {
-                url: '/upload/image',
+                url: '/upload',
                 max: 10 * 1024 * 1024,
             },
             previewImagesInEditor: true,
@@ -106,43 +106,6 @@
                     alert('更新失败: ' + error.message);
                 });
         }
-
-        // PUT请求处理
-        // document.getElementById('putForm').addEventListener('submit', function (e) {
-        //     e.preventDefault();
-
-        //     const formData = {
-        //         title: document.getElementById('putTitle').value,
-        //         content: document.getElementById('putContent').value
-        //     }
-
-        //     fetch(document.getElementById('putForm').action, {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(formData)
-        //     })
-        //         .then(response => {
-        //             // 检查响应状态
-        //             if (!response.ok) {
-        //                 throw new Error(`HTTP错误! 状态: ${response.status}`);
-        //             }
-        //             return response.json(); // 解析JSON响应
-        //         })
-        //         .then(data => {
-        //             // 显示成功消息
-        //             alert(data.message);
-
-        //             // 跳转到文章详情页或其他页面
-        //             window.location.href = '/articles/' + data.article.id;
-        //             // 或者刷新当前页面: location.reload();
-        //         })
-        //         .catch(error => {
-        //             console.error('错误:', error);
-        //             alert('更新失败: ' + error.message);
-        //         });
-        // });
     </script>
 </body>
 

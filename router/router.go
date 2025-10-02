@@ -112,6 +112,6 @@ func setupUploadRoutes(r *gin.Engine) {
 	// 认证路由组
 	UploadGroup := r.Group("/upload")
 	{
-		UploadGroup.POST("/image", handlers.UploadImage)
+		UploadGroup.POST("", handlers.UploadFile)
 	}
 }
