@@ -18,7 +18,7 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-var jwtSecret = []byte("your-secret-key")
+var jwtSecret = []byte("my-secret-key")
 
 // 生成 JWT Token
 func GenerateJWT(userID uint, username string) (string, error) {

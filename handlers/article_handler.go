@@ -1,11 +1,16 @@
 package handlers
 
 import (
+	"html/template"
 	"net/http"
+	"time"
 
 	"gitee.com/wwgzr/blog/global"
 	"gitee.com/wwgzr/blog/models"
 	"github.com/gin-gonic/gin"
+	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/html"
+	"github.com/gomarkdown/markdown/parser"
 )
 
 // 文章处理组
@@ -35,9 +40,15 @@ func (h *ArticleHanders) ShowCreateArticlePage(c *gin.Context) {
 }
 
 func (h *ArticleHanders) CreateArticle(c *gin.Context) {
-	// 获取表单数据
-	title := c.PostForm("title")
-	content := c.PostForm("content")
+	type CreateArticleRequest struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+	}
+	var newArticle CreateArticleRequest
+	if err := c.BindJSON(&newArticle); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// 获取作者对象
 	var user models.User
@@ -52,8 +63,8 @@ func (h *ArticleHanders) CreateArticle(c *gin.Context) {
 
 		// 创建文章对象
 		article := models.Article{
-			Title:   title,
-			Content: content,
+			Title:   newArticle.Title,
+			Content: newArticle.Content,
 			User:    user,
 		}
 
@@ -64,19 +75,61 @@ func (h *ArticleHanders) CreateArticle(c *gin.Context) {
 			})
 			return
 		}
-
-		c.Redirect(http.StatusFound, "/articles")
+		c.JSON(http.StatusOK, gin.H{
+			"message": "发布成功",
+			"article": article, // 返回创建的文章数据
+		})
+		// c.Redirect(http.StatusFound, "/articles")
 	}
 }
 
+// Markdown 转 HTML
+func mdToHTML(md string) string {
+	extensions := parser.CommonExtensions | parser.AutoHeadingIDs
+	p := parser.NewWithExtensions(extensions)
+	doc := p.Parse([]byte(md))
+
+	htmlFlags := html.CommonFlags
+	opts := html.RendererOptions{Flags: htmlFlags}
+	renderer := html.NewRenderer(opts)
+
+	return string(markdown.Render(doc, renderer))
+}
+
 func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
+	type temp struct {
+		Id        uint
+		Title     string
+		Content   template.HTML
+		UserID    uint
+		UpdatedAt time.Time
+		User      struct {
+			Username string
+		}
+	}
 	var article models.Article
 	articleID := c.Param("id")
 	global.DB.Preload("User").First(&article, articleID)
+	article.Content = mdToHTML(article.Content)
 
+	// 将markdown转换为HTML，并转换为template.HTML类型
+	htmlContent := mdToHTML(article.Content)
+
+	newArticle := temp{
+		Id:        article.Id,
+		Title:     article.Title,
+		Content:   template.HTML(htmlContent),
+		UserID:    article.UserID,
+		UpdatedAt: article.UpdatedAt,
+		User: struct {
+			Username string
+		}{
+			Username: article.User.Username,
+		},
+	}
 	c.HTML(http.StatusOK, "article.html", gin.H{
 		"user_id": c.GetUint("user_id"),
-		"article": article,
+		"article": newArticle,
 	})
 }
 

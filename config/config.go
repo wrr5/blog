@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Database DatabaseConfig
 	Server   ServerConfig
+	JWT      JWTConfig
 }
 
 type DatabaseConfig struct {
@@ -22,6 +23,10 @@ type DatabaseConfig struct {
 type ServerConfig struct {
 	Port  string
 	Debug bool
+}
+
+type JWTConfig struct {
+	Secret string
 }
 
 var AppConfig *Config

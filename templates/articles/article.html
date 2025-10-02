@@ -10,25 +10,34 @@
         * {
             margin: 10px;
         }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="container text-center card" style="width: 50%;">
         <div class="card-body">
-        {{if .article}}
-        <h5 class="card-title">{{.article.Title}}</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">作者: {{.article.User.Username}}, 发布时间: {{.article.UpdatedAt.Format "2006-01-02"}}</h6>
-        <p class="card-text">{{.article.Content}}</p>
-        {{else}}
-        <p class="card-text">暂无数据</p>
-        {{end}}
+            {{if .article}}
+            <h5 class="card-title">{{.article.Title}}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">作者: {{.article.User.Username}}, 发布时间:
+                {{.article.UpdatedAt.Format "2006-01-02"}}</h6>
+            <div class="card-text">{{.article.Content}}</div>
+            {{else}}
+            <div class="card-text">暂无数据</div>
+            {{end}}
 
-        {{if and .user_id (eq .user_id .article.UserID)}}
-        <a href="/articles/{{.article.Id}}/edit" class="card-link link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">编辑</a>
-        <a href="/articles/{{.article.Id}}" id="delete-link" class="card-link link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">删除</a>
-        {{end}}
-        <a href="/articles" class="card-link link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">返回文章列表</a>
+            {{if and .user_id (eq .user_id .article.UserID)}}
+            <a href="/articles/{{.article.Id}}/edit"
+                class="card-link link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">编辑</a>
+            <a href="/articles/{{.article.Id}}" id="delete-link"
+                class="card-link link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">删除</a>
+            {{end}}
+            <a href="/articles"
+                class="card-link link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">返回文章列表</a>
         </div>
     </div>
     <script src="/static/js/bootstrap.bundle.js"></script>

@@ -17,6 +17,7 @@ func SetupRouter() *gin.Engine {
 	setupArticleRoutes(r)
 	setupUserRoutes(r)
 	setupAuthRoutes(r)
+	setupUploadRoutes(r)
 
 	// 404处理
 	r.NoRoute(func(c *gin.Context) {
@@ -104,5 +105,13 @@ func setupAuthRoutes(r *gin.Engine) {
 
 		// 登出 - POST /auth/logout
 		// authGroup.POST("/logout", handlers.Logout)
+	}
+}
+
+func setupUploadRoutes(r *gin.Engine) {
+	// 认证路由组
+	UploadGroup := r.Group("/upload")
+	{
+		UploadGroup.POST("/image", handlers.UploadImage)
 	}
 }

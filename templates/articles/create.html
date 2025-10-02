@@ -4,9 +4,16 @@
 <head>
     <title>发布文章</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- 集成vditorMD编辑器 -->
+    <link rel="stylesheet" href="https://unpkg.com/vditor/dist/index.css" />
+    <script src="https://unpkg.com/vditor/dist/index.min.js"></script>
     <style>
         * {
             margin: 5px;
+        }
+        #vditor .vditor-reset img {
+            max-width: 10%;
+            height: auto;
         }
     </style>
 </head>
@@ -15,23 +22,68 @@
     <div class="container text-center" style="width: 50%;">
         <div class="row">
             <h3>作者: {{.username}}</h3>
-            <form id="putForm" action="/articles">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="title" name="title" required>
-                    <label for="title">标题</label>
-                </div>
-                <div class="form-floating">
-                    <textarea class="form-control" id="content" name="content" style="height: 300px"
-                        required></textarea>
-                    <label for="content">内容</label>
-                </div>
-                <button type="submit" class="btn btn-success">发布</button>
-                
-            <a href="/" class="btn btn-info">回到首页</a>
-            </form>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping" style="margin: 0;">标题</span>
+                <input type="text" class="form-control" aria-label="标题" style="margin: 0;"
+                    aria-describedby="addon-wrapping" id="Title" name="title" placeholder="在此输入标题..." required>
+            </div>
+            <div id="vditor"></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button onclick="saveContent()" class="btn btn-success">发布文章</button>
+                <a href="/" class="btn btn-info">回到首页</a>
+            </div>
         </div>
     </div>
     <script src="/static/js/bootstrap.bundle.js"></script>
+    <script>
+        // MD
+        const vditor = new Vditor('vditor', {
+            height: 500,
+            uploadImage: true,
+            upload: {
+                url: '/upload/image',
+                max: 10 * 1024 * 1024,
+            },
+            previewImagesInEditor: true,
+            after: () => {
+                vditor.setValue(``);
+            },
+        });
+
+        function saveContent() {
+            const data = {
+                title: document.getElementById('Title').value,
+                content: content = vditor.getValue(),
+            }
+            // 发送到后端保存
+            fetch('/articles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    // 检查响应状态
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误! 状态: ${response.status}`);
+                    }
+                    return response.json(); // 解析JSON响应
+                })
+                .then(data => {
+                    // 显示成功消息
+                    alert(data.message);
+                    // 跳转到首页
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                    alert('更新失败: ' + error.message);
+                });
+        }
+    </script>
 </body>
 
 </html>

@@ -8,3 +8,6 @@ database:
 server:
   port: "8080"
   debug: true
+
+JWT:
+  Secret: "my-secret-key"

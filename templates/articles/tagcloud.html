@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标签云页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tag-cloud-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tag-small {
+            font-size: 14px;
+            padding: 6px 12px;
+        }
+        
+        .tag-medium {
+            font-size: 16px;
+            padding: 8px 15px;
+        }
+        
+        .tag-large {
+            font-size: 18px;
+            padding: 10px 18px;
+        }
+        
+        .tag-xlarge {
+            font-size: 22px;
+            padding: 12px 20px;
+        }
+        
+        .tag-count {
+            font-size: 12px;
+            margin-left: 5px;
+            opacity: 0.7;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .tag-details {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .tag-details h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .tag-item-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .tag-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .tag-item h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .tag-item p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .tag-cloud {
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>标签云</h1>
+            <p class="description">探索我们内容库中的热门主题和关键词。标签大小表示相关内容的数量。</p>
+        </header>
+        
+        <div class="controls">
+            <button id="sortAlpha">按字母排序</button>
+            <button id="sortFrequency">按频率排序</button>
+            <button id="shuffleTags">随机排列</button>
+        </div>
+        
+        <div class="tag-cloud-container">
+            <div class="tag-cloud" id="tagCloud">
+                <!-- 标签将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="tag-details" id="tagDetails" style="display: none;">
+            <h3 id="selectedTagName">标签详情</h3>
+            <div class="tag-item-list" id="tagItemList">
+                <!-- 选中标签的相关内容将在这里显示 -->
+            </div>
+        </div>
+        
+        <footer>
+            <p>标签云页面 &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // 示例标签数据
+        const tags = [
+            { name: "JavaScript", count: 45, color: "#f39c12" },
+            { name: "HTML", count: 38, color: "#e74c3c" },
+            { name: "CSS", count: 36, color: "#3498db" },
+            { name: "React", count: 32, color: "#9b59b6" },
+            { name: "Vue", count: 28, color: "#2ecc71" },
+            { name: "Node.js", count: 25, color: "#1abc9c" },
+            { name: "Python", count: 22, color: "#34495e" },
+            { name: "Java", count: 20, color: "#d35400" },
+            { name: "PHP", count: 18, color: "#8e44ad" },
+            { name: "数据库", count: 15, color: "#c0392b" },
+            { name: "Git", count: 14, color: "#7f8c8d" },
+            { name: "Docker", count: 12, color: "#16a085" },
+            { name: "TypeScript", count: 10, color: "#2980b9" },
+            { name: "Webpack", count: 9, color: "#f1c40f" },
+            { name: "算法", count: 8, color: "#27ae60" },
+            { name: "数据结构", count: 7, color: "#e67e22" },
+            { name: "人工智能", count: 6, color: "#2c3e50" },
+            { name: "机器学习", count: 5, color: "#8e44ad" },
+            { name: "网络安全", count: 4, color: "#c0392b" },
+            { name: "移动开发", count: 3, color: "#16a085" }
+        ];
+
+        // 示例内容数据
+        const contentItems = {
+            "JavaScript": [
+                { title: "JavaScript ES6+ 新特性详解", description: "深入探讨ES6及之后版本的新特性" },
+                { title: "JavaScript 异步编程指南", description: "Promise、async/await等异步编程技术" },
+                { title: "JavaScript 设计模式实践", description: "常用设计模式在JavaScript中的应用" }
+            ],
+            "React": [
+                { title: "React Hooks 完全指南", description: "掌握React Hooks的使用和最佳实践" },
+                { title: "React 性能优化技巧", description: "提升React应用性能的各种方法" },
+                { title: "React 与 TypeScript 结合开发", description: "在React项目中如何使用TypeScript" }
+            ],
+            "Vue": [
+                { title: "Vue 3 组合式API详解", description: "Vue 3中组合式API的使用方法" },
+                { title: "Vuex 状态管理指南", description: "Vue应用中状态管理的最佳实践" }
+            ],
+            "CSS": [
+                { title: "CSS Grid 布局完全指南", description: "使用CSS Grid创建复杂布局" },
+                { title: "Flexbox 实战技巧", description: "Flexbox布局的实用技巧和案例" },
+                { title: "CSS 动画与过渡效果", description: "创建流畅的CSS动画和过渡效果" }
+            ]
+            // 其他标签的内容数据可以类似添加
+        };
+
+        // 获取DOM元素
+        const tagCloud = document.getElementById('tagCloud');
+        const tagDetails = document.getElementById('tagDetails');
+        const selectedTagName = document.getElementById('selectedTagName');
+        const tagItemList = document.getElementById('tagItemList');
+        const sortAlphaBtn = document.getElementById('sortAlpha');
+        const sortFrequencyBtn = document.getElementById('sortFrequency');
+        const shuffleTagsBtn = document.getElementById('shuffleTags');
+
+        // 渲染标签云
+        function renderTagCloud(tagsArray) {
+            tagCloud.innerHTML = '';
+            
+            // 计算最大和最小计数，用于确定标签大小
+            const counts = tagsArray.map(tag => tag.count);
+            const maxCount = Math.max(...counts);
+            const minCount = Math.min(...counts);
+            
+            tagsArray.forEach(tag => {
+                // 根据计数确定标签大小类
+                let sizeClass = 'tag-small';
+                const ratio = (tag.count - minCount) / (maxCount - minCount);
+                
+                if (ratio > 0.75) {
+                    sizeClass = 'tag-xlarge';
+                } else if (ratio > 0.5) {
+                    sizeClass = 'tag-large';
+                } else if (ratio > 0.25) {
+                    sizeClass = 'tag-medium';
+                }
+                
+                // 创建标签元素
+                const tagElement = document.createElement('a');
+                tagElement.className = `tag ${sizeClass}`;
+                tagElement.textContent = tag.name;
+                tagElement.innerHTML += `<span class="tag-count">${tag.count}</span>`;
+                tagElement.style.backgroundColor = tag.color;
+                tagElement.style.color = 'white';
+                
+                // 添加点击事件
+                tagElement.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showTagDetails(tag.name);
+                });
+                
+                tagCloud.appendChild(tagElement);
+            });
+        }
+
+        // 显示标签详情
+        function showTagDetails(tagName) {
+            selectedTagName.textContent = `"${tagName}" 相关内容`;
+            tagItemList.innerHTML = '';
+            
+            if (contentItems[tagName]) {
+                contentItems[tagName].forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'tag-item';
+                    itemElement.innerHTML = `
+                        <h4>${item.title}</h4>
+                        <p>${item.description}</p>
+                    `;
+                    tagItemList.appendChild(itemElement);
+                });
+            } else {
+                tagItemList.innerHTML = '<p>暂无相关内容</p>';
+            }
+            
+            tagDetails.style.display = 'block';
+            
+            // 滚动到详情区域
+            tagDetails.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 按字母排序
+        function sortAlphabetically() {
+            const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+            renderTagCloud(sortedTags);
+        }
+
+        // 按频率排序
+        function sortByFrequency() {
+            const sortedTags = [...tags].sort((a, b) => b.count - a.count);
+            renderTagCloud(sortedTags);
+        }
+
+        // 随机排列
+        function shuffleTags() {
+            const shuffledTags = [...tags];
+            for (let i = shuffledTags.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledTags[i], shuffledTags[j]] = [shuffledTags[j], shuffledTags[i]];
+            }
+            renderTagCloud(shuffledTags);
+        }
+
+        // 添加事件监听器
+        sortAlphaBtn.addEventListener('click', sortAlphabetically);
+        sortFrequencyBtn.addEventListener('click', sortByFrequency);
+        shuffleTagsBtn.addEventListener('click', shuffleTags);
+
+        // 初始渲染
+        renderTagCloud(tags);
+    </script>
+</body>
+</html>

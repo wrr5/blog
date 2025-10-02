@@ -15,6 +15,13 @@ type Article struct {
 	UserID uint `json:"user_id" gorm:"not null;index"`                                                             // 外键字段
 	User   User `json:"user" gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // 关联关系
 
+	// 添加外键关联分类 (一篇文章属于一个分类)
+	CategoryID *uint    `json:"category_id"` // 指针类型，允许 NULL
+	Category   Category `json:"category" gorm:"foreignKey:CategoryID;references:ID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;"`
+
+	// 关联标签 (一篇文章可以有多个标签)
+	Tags []Tag `json:"tags,omitempty" gorm:"many2many:article_tags;" `
+
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"` // 自动创建时间
 	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime"` // 自动更新时间
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
