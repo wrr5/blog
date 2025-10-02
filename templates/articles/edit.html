@@ -59,6 +59,25 @@
                 title: document.getElementById('putTitle').value,
                 content: content = vditor.getValue(),
             }
+
+            // 验证标题和内容
+            if (!data.title) {
+                alert('请输入文章标题！');
+                document.getElementById('Title').focus();
+                return;
+            }
+
+            if (!data.content) {
+                alert('请输入文章内容！');
+                return;
+            }
+
+            // 如果内容只有空白字符
+            if (data.content.replace(/\s/g, '').length === 0) {
+                alert('文章内容不能为空！');
+                return;
+            }
+            
             // 发送到后端保存
             fetch('/articles/{{.article.Id}}', {
                 method: 'PUT',
