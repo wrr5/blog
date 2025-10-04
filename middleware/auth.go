@@ -3,6 +3,8 @@ package middleware
 import (
 	"net/http"
 
+	"gitee.com/wwgzr/blog/global"
+	"gitee.com/wwgzr/blog/models"
 	"gitee.com/wwgzr/blog/tools"
 	"github.com/gin-gonic/gin"
 )
@@ -52,6 +54,28 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 将用户信息设置到上下文
 		c.Set("user_id", userID)
 		c.Set("username", username)
+		var user models.User
+		global.DB.First(&user, userID)
+		c.Set("user", user)
 		c.Next()
 	}
+}
+
+// 管理员权限中间件
+func AdminRequired(c *gin.Context) {
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(401, gin.H{"error": "请先登录"})
+		c.Abort()
+		return
+	}
+
+	currentUser := user.(models.User)
+	if !currentUser.IsAdmin {
+		c.JSON(403, gin.H{"error": "需要管理员权限"})
+		c.Abort()
+		return
+	}
+
+	c.Next()
 }

@@ -23,9 +23,16 @@ func NewArticleHanders() *ArticleHanders {
 
 func (h *ArticleHanders) ShowArticleList(c *gin.Context) {
 	var articles []models.Article
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(401, gin.H{"error": "请先登录"})
+		c.Abort()
+		return
+	}
 	global.DB.Find(&articles)
 
 	c.HTML(http.StatusOK, "list.html", gin.H{
+		"user":     user,
 		"title":    "文章列表",
 		"articles": articles,
 	})

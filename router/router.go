@@ -18,6 +18,8 @@ func SetupRouter() *gin.Engine {
 	setupUserRoutes(r)
 	setupAuthRoutes(r)
 	setupUploadRoutes(r)
+	setupAdminRoutes(r)
+	setupCategoryRoutes(r)
 
 	// 404处理
 	r.NoRoute(func(c *gin.Context) {
@@ -81,7 +83,14 @@ func setupUserRoutes(r *gin.Engine) {
 		// 删除用户 - DELETE /users/:id
 		userGroup.DELETE("/:id", handlers.DeleteUser)
 	}
+}
 
+func setupCategoryRoutes(r *gin.Engine) {
+	categoryGroup := r.Group("/categories")
+	categoryGroup.Use(middleware.AuthMiddleware())
+	{
+		categoryGroup.GET("", handlers.GetCategories)
+	}
 }
 
 func setupAuthRoutes(r *gin.Engine) {
@@ -109,9 +118,19 @@ func setupAuthRoutes(r *gin.Engine) {
 }
 
 func setupUploadRoutes(r *gin.Engine) {
-	// 认证路由组
+	// 文件上传路由组
 	UploadGroup := r.Group("/upload")
 	{
 		UploadGroup.POST("", handlers.UploadFile)
+	}
+}
+
+func setupAdminRoutes(r *gin.Engine) {
+	// 管理员路由组
+	adminGroup := r.Group("/admin")
+	adminGroup.Use(middleware.AuthMiddleware(), middleware.AdminRequired) // 先验证登录，再验证管理员权限
+	{
+		adminGroup.GET("", handlers.Admin)
+		adminGroup.GET("/categories", handlers.ShowCategoriesPage)
 	}
 }
