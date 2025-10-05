@@ -8,12 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ShowCategoriesPage(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"todo": "createPage",
-	})
-}
-
 func GetCategories(c *gin.Context) {
 	var categories []models.Category
 	global.DB.Find(&categories)

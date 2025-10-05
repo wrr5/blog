@@ -131,6 +131,7 @@ func setupAdminRoutes(r *gin.Engine) {
 	adminGroup.Use(middleware.AuthMiddleware(), middleware.AdminRequired) // 先验证登录，再验证管理员权限
 	{
 		adminGroup.GET("", handlers.Admin)
-		adminGroup.GET("/categories", handlers.ShowCategoriesPage)
+		adminGroup.GET("/categories", handlers.ShowAdminCategoriesPage)
+		adminGroup.GET("/users", handlers.ShowAdminUsersPage)
 	}
 }
