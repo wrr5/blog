@@ -204,6 +204,5 @@ func (h *ArticleHanders) DeleteArticle(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "删除成功",
 		"redirect": "/articles/" + id, // 跳转URL
-		"article":  article,           // 返回更新后的文章数据
 	})
 }

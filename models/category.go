@@ -12,5 +12,4 @@ type Category struct {
 
 	// 添加外键关联 Article
 	Articles []Article `json:"articles,omitempty" gorm:"foreignKey:CategoryID"` // 反向引用
-
 }

@@ -90,6 +90,10 @@ func setupCategoryRoutes(r *gin.Engine) {
 	categoryGroup.Use(middleware.AuthMiddleware())
 	{
 		categoryGroup.GET("", handlers.GetCategories)
+		categoryGroup.POST("", middleware.AdminRequired, handlers.CreateCategory)
+		categoryGroup.GET("/:id", handlers.GetCategory)
+		categoryGroup.PUT("/:id", middleware.AdminRequired, handlers.UpdateCategory)
+		categoryGroup.DELETE("/:id", middleware.AdminRequired, handlers.DeleteCategory)
 	}
 }
 
