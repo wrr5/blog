@@ -21,10 +21,11 @@
             height: auto;
         }
     </style>
+    {{template "bgc" .}}
 </head>
 
 <body>
-    <div class="container text-center" style="width: 50%;">
+    <div class="container text-center card" style="width: 50%;">
         <div class="row">
             <h3>作者: {{.article.User.Username}}</h3>
             <div class="input-group flex-nowrap">
@@ -34,7 +35,13 @@
             </div>
             <!-- <input type="text" class="form-control" id="putTitle" name="title" value="{{.article.Title}}" required> -->
             <div id="vditor"></div>
-            <button onclick="saveContent()" class="btn btn-success">更新文章</button>
+            
+        </div>
+        <div class="row">
+            <div class="col">
+                <button onclick="saveContent()" class="btn btn-success">更新文章</button>
+            <a href="/" class="btn btn-secondary">返回</a>
+            </div>
         </div>
     </div>
     <script src="/static/js/bootstrap.bundle.js"></script>

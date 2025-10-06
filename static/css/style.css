@@ -1,0 +1,24 @@
+.glass-card {
+    background-color: rgba(255, 255, 255, 0.3);
+    /* 背景透明度 */
+    backdrop-filter: blur(3px);
+    /* 可选：高级毛玻璃效果 */
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    /* 可选：半透明边框 */
+}
+
+.transparent-list-group {
+    background-color: rgba(255, 255, 255, 0.3);
+    /* 背景透明度 */
+    backdrop-filter: blur(3px);
+    /* 可选：高级毛玻璃效果 */
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    /* 可选：半透明边框 */
+}
+
+.transparent-list-group .list-group-item {
+    background-color: transparent;
+    /* 列表项背景透明 */
+    border-color: rgba(255, 255, 255, 0.2);
+    /* 可选：设置边框颜色为半透明 */
+}

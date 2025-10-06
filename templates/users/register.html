@@ -6,38 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册页面</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {{template "bgc" .}}
 </head>
 
-<body>
-    <div class="container text-center">
-        <div class="row" style="justify-content: center;">
-            <div class="col-4">
-                <form action="/auth/register" id="registerForm" method="POST" onsubmit="return validateForm()">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">用户名</label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">邮箱</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">密码</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder=""
-                            required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password2" class="form-label">确认密码</label>
-                        <input type="password" class="form-control" id="password2" name="password2" placeholder=""
-                            required>
-                        <div id="passwordError" class="text-danger mt-1" style="display: none;"></div>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-success">注册</button>
-                    </div>
-                </form>
+<body class="d-flex align-items-center justify-content-center">
+    <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow glass-card">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">用户注册</h3>
+                    <form action="/auth/register" id="registerForm" method="POST" onsubmit="return validateForm()">
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                                required>
+                            <div class="invalid-feedback" id="usernameError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                placeholder="name@example.com" required>
+                            <div class="invalid-feedback" id="emailError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">密码</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="至少6位字符" required>
+                            <div class="form-text">密码长度至少6位</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">确认密码</label>
+                            <input type="password" class="form-control" id="password2" name="password2"
+                                placeholder="请再次输入密码" required>
+                            <div class="invalid-feedback" id="passwordError"></div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">注册</button>
+                            <a href="/auth/login" class="btn btn-outline-secondary btn-lg">返回登录</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
     </div>
     <script src="/static/js/bootstrap.bundle.js"></script>
     <script>
@@ -79,6 +97,13 @@
             // 清空之前的错误信息
             errorElement.style.display = 'none';
             errorElement.textContent = '';
+
+            // 检查密码长度
+            if ((password.length) < 6) {
+                errorElement.textContent = '密码长度不能小于6位';
+                errorElement.style.display = 'block';
+                return false; // 阻止表单提交
+            }
 
             // 检查密码是否一致
             if (password !== password2) {
