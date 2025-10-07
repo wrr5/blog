@@ -10,6 +10,7 @@ type Config struct {
 	Database DatabaseConfig
 	Server   ServerConfig
 	JWT      JWTConfig
+	Page     PageConfig
 }
 
 type DatabaseConfig struct {
@@ -27,6 +28,10 @@ type ServerConfig struct {
 
 type JWTConfig struct {
 	Secret string
+}
+
+type PageConfig struct {
+	Size string
 }
 
 var AppConfig *Config

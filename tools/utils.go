@@ -55,3 +55,25 @@ func ParseJWT(tokenString string) (jwt.MapClaims, error) {
 		return nil, fmt.Errorf("无效的token")
 	}
 }
+
+type Pagination struct {
+	CurrentPage int
+	TotalPages  int
+	PageSize    int
+	BasePath    string
+}
+
+// 在结构体上定义方法
+func (p Pagination) NextPage() int {
+	if p.CurrentPage >= p.TotalPages {
+		return p.TotalPages
+	}
+	return p.CurrentPage + 1
+}
+
+func (p Pagination) PrevPage() int {
+	if p.CurrentPage <= 1 {
+		return 1
+	}
+	return p.CurrentPage - 1
+}

@@ -13,3 +13,54 @@
     }
 </style>
 {{end}}
+
+{{define "pager"}}
+{{if gt .Pagination.TotalPages 0}}
+<link rel="stylesheet" href="/static/css/style.css">
+<nav aria-label="Page navigation" style="margin-top: 5px;">
+    <ul class="pagination justify-content-center">
+        <!-- 上一页按钮，如果当前页是第一页，则禁用 -->
+        {{ if eq .Pagination.CurrentPage 1 }}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">上一页</a>
+        </li>
+        {{ else }}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{.Pagination.BasePath}}?page={{.Pagination.PrevPage}}&pageSize={{.Pagination.PageSize}}">上一页</a>
+        </li>
+        {{ end }}
+
+        <!-- 页码数字，循环生成 -->
+        {{ $currentPage := .Pagination.CurrentPage }}
+        {{ $totalPages := .Pagination.TotalPages }}
+        {{ $basePath := .Pagination.BasePath }}
+        {{ $pageSize := .Pagination.PageSize }}
+
+        {{ range $page := iterate 1 $totalPages }}
+        {{ if eq $page $currentPage }}
+        <li class="page-item active" aria-current="page">
+            <span class="page-link">{{ $page }}</span>
+        </li>
+        {{ else }}
+        <li class="page-item">
+            <a class="page-link" href="{{$basePath}}?page={{$page}}&pageSize={{$pageSize}}">{{ $page }}</a>
+        </li>
+        {{ end }}
+        {{ end }}
+
+        <!-- 下一页按钮，如果当前页是最后一页，则禁用 -->
+        {{ if eq .Pagination.CurrentPage .Pagination.TotalPages }}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" aria-disabled="true">下一页</a>
+        </li>
+        {{ else }}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{.Pagination.BasePath}}?page={{.Pagination.NextPage}}&pageSize={{.Pagination.PageSize}}">下一页</a>
+        </li>
+        {{ end }}
+    </ul>
+</nav>
+{{end}}
+{{end}}

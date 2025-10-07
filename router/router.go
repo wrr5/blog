@@ -3,6 +3,7 @@ package router
 
 import (
 	"net/http"
+	"text/template"
 
 	"gitee.com/wwgzr/blog/handlers"
 	"gitee.com/wwgzr/blog/middleware"
@@ -12,7 +13,18 @@ import (
 // SetupRouter 配置所有路由
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-
+	r.SetFuncMap(template.FuncMap{
+		"iterate": func(start, end int) []int {
+			if start > end {
+				return []int{}
+			}
+			items := make([]int, end-start+1)
+			for i := range items {
+				items[i] = start + i
+			}
+			return items
+		},
+	})
 	// 注册文章相关路由
 	setupArticleRoutes(r)
 	setupUserRoutes(r)
