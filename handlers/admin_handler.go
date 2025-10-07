@@ -39,6 +39,7 @@ func ShowAdminCategoriesPage(c *gin.Context) {
 		PageSize:    pageSize,
 		BasePath:    "/admin/categories",
 	}
+	Pagination.CalculateDisplayPages(7)
 
 	c.HTML(200, "admin_categories.html", gin.H{
 		"CurrentPath": c.Request.URL.Path,

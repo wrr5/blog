@@ -57,10 +57,13 @@ func ParseJWT(tokenString string) (jwt.MapClaims, error) {
 }
 
 type Pagination struct {
-	CurrentPage int
-	TotalPages  int
-	PageSize    int
-	BasePath    string
+	CurrentPage     int
+	TotalPages      int
+	PageSize        int
+	BasePath        string
+	DisplayPages    []int // 要显示的页码列表
+	HasPrevEllipsis bool  // 前面是否有省略号
+	HasNextEllipsis bool  // 后面是否有省略号
 }
 
 // 在结构体上定义方法
@@ -76,4 +79,39 @@ func (p Pagination) PrevPage() int {
 		return 1
 	}
 	return p.CurrentPage - 1
+}
+
+func (p *Pagination) CalculateDisplayPages(maxDisplay int) {
+	if p.TotalPages <= maxDisplay {
+		// 总页数小于等于最大显示数量，显示所有页码
+		p.DisplayPages = make([]int, p.TotalPages)
+		for i := 0; i < p.TotalPages; i++ {
+			p.DisplayPages[i] = i + 1
+		}
+		return
+	}
+
+	// 计算起始和结束页码
+	start := p.CurrentPage - maxDisplay/2
+	end := p.CurrentPage + maxDisplay/2
+
+	if start < 1 {
+		start = 1
+		end = maxDisplay
+	}
+
+	if end > p.TotalPages {
+		end = p.TotalPages
+		start = end - maxDisplay + 1
+	}
+
+	// 生成显示的页码列表
+	p.DisplayPages = make([]int, end-start+1)
+	for i := range p.DisplayPages {
+		p.DisplayPages[i] = start + i
+	}
+
+	// 判断是否需要省略号
+	p.HasPrevEllipsis = start > 1
+	p.HasNextEllipsis = end < p.TotalPages
 }

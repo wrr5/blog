@@ -33,11 +33,21 @@
 
         <!-- 页码数字，循环生成 -->
         {{ $currentPage := .Pagination.CurrentPage }}
-        {{ $totalPages := .Pagination.TotalPages }}
         {{ $basePath := .Pagination.BasePath }}
         {{ $pageSize := .Pagination.PageSize }}
 
-        {{ range $page := iterate 1 $totalPages }}
+        <!-- 第一页 -->
+        {{ if .Pagination.HasPrevEllipsis }}
+        <li class="page-item">
+            <a class="page-link" href="{{$basePath}}?page=1&pageSize={{$pageSize}}">1</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">...</span>
+        </li>
+        {{ end }}
+
+        <!-- 显示页码 -->
+        {{ range $page := .Pagination.DisplayPages }}
         {{ if eq $page $currentPage }}
         <li class="page-item active" aria-current="page">
             <span class="page-link">{{ $page }}</span>
@@ -47,6 +57,17 @@
             <a class="page-link" href="{{$basePath}}?page={{$page}}&pageSize={{$pageSize}}">{{ $page }}</a>
         </li>
         {{ end }}
+        {{ end }}
+
+        <!-- 最后一页 -->
+        {{ if .Pagination.HasNextEllipsis }}
+        <li class="page-item disabled">
+            <span class="page-link">...</span>
+        </li>
+        <li class="page-item">
+            <a class="page-link"
+                href="{{$basePath}}?page={{.Pagination.TotalPages}}&pageSize={{$pageSize}}">{{.Pagination.TotalPages}}</a>
+        </li>
         {{ end }}
 
         <!-- 下一页按钮，如果当前页是最后一页，则禁用 -->

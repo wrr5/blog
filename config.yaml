@@ -13,4 +13,4 @@ JWT:
   Secret: "my-secret-key"
 
 Page:
-  Size: "5"
+  Size: "10"

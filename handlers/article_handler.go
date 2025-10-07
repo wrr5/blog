@@ -54,6 +54,7 @@ func (h *ArticleHanders) ShowArticleList(c *gin.Context) {
 		PageSize:    pageSize,
 		BasePath:    "/articles",
 	}
+	Pagination.CalculateDisplayPages(7)
 
 	c.HTML(http.StatusOK, "list.html", gin.H{
 		"user":       user,
