@@ -33,12 +33,11 @@ func Login(c *gin.Context) {
 
 		// 设置 HTTP-only Cookie
 		c.SetCookie("auth_token", "Bearer "+token, 3600*72, "/", "", false, true)
-
 		// c.JSON(http.StatusOK, gin.H{
 		// 	"message": "登录成功",
 		// 	"user":    user,
 		// })
-		c.Redirect(http.StatusFound, "/articles")
+		c.Redirect(http.StatusFound, "/")
 	}
 }
 

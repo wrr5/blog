@@ -2,7 +2,6 @@
 package router
 
 import (
-	"net/http"
 	"text/template"
 
 	"gitee.com/wwgzr/blog/handlers"
@@ -14,18 +13,10 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
-		"iterate": func(start, end int) []int {
-			if start > end {
-				return []int{}
-			}
-			items := make([]int, end-start+1)
-			for i := range items {
-				items[i] = start + i
-			}
-			return items
-		},
+		"iterate": pageIterate,
 	})
 	// 注册文章相关路由
+	setIndexRoutes(r)
 	setupArticleRoutes(r)
 	setupUserRoutes(r)
 	setupAuthRoutes(r)
@@ -33,6 +24,8 @@ func SetupRouter() *gin.Engine {
 	setupAdminRoutes(r)
 	setupCategoryRoutes(r)
 
+	// 根路径跳转
+	r.GET("/", middleware.OptionalAuthMiddleware, handlers.ShowIndex)
 	// 404处理
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "notfound.html", gin.H{"error": "页面不存在"})
@@ -44,20 +37,12 @@ func SetupRouter() *gin.Engine {
 // setupArticleRoutes 配置文章相关路由
 func setupArticleRoutes(r *gin.Engine) {
 	articleHander := handlers.NewArticleHanders()
-
-	// 根路径跳转到, 已登录到文章列表, 未登录到登陆页
-	r.GET("/", func(c *gin.Context) {
-		// todo: 未登录到登陆页面
-		c.Redirect(http.StatusFound, "/articles")
-	})
 	// 文章路由组
 	articleGroup := r.Group("/articles")
 
 	// 使用用户认证中间件
 	articleGroup.Use(middleware.AuthMiddleware())
 	{
-		// 博客列表
-		articleGroup.GET("", articleHander.ShowArticleList)
 		// 发布博客页面
 		articleGroup.GET("/create", articleHander.ShowCreateArticlePage)
 		// 新增博客
@@ -141,6 +126,15 @@ func setupUploadRoutes(r *gin.Engine) {
 	}
 }
 
+func setIndexRoutes(r *gin.Engine) {
+	// 首页导航栏路由
+	IndexGroup := r.Group("/")
+	{
+		IndexGroup.GET("home", middleware.AuthMiddleware(), handlers.ShowHomePage)
+		IndexGroup.GET("about", middleware.OptionalAuthMiddleware, handlers.ShowAboutPage)
+	}
+}
+
 func setupAdminRoutes(r *gin.Engine) {
 	// 管理员路由组
 	adminGroup := r.Group("/admin")
@@ -150,4 +144,15 @@ func setupAdminRoutes(r *gin.Engine) {
 		adminGroup.GET("/categories", handlers.ShowAdminCategoriesPage)
 		adminGroup.GET("/users", handlers.ShowAdminUsersPage)
 	}
+}
+
+func pageIterate(start, end int) []int {
+	if start > end {
+		return []int{}
+	}
+	items := make([]int, end-start+1)
+	for i := range items {
+		items[i] = start + i
+	}
+	return items
 }

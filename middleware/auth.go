@@ -9,6 +9,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 可选认证中间件 - 用于公开页面
+func OptionalAuthMiddleware(c *gin.Context) {
+	// 尝试从 Cookie 获取 token
+	token, err := c.Cookie("auth_token")
+	if err == nil && len(token) > 7 {
+		// 有 token，尝试解析
+		if claims, err := tools.ParseJWT(token[7:]); err == nil {
+			// token 有效，获取用户信息
+			if userIDFloat, ok := claims["user_id"].(float64); ok {
+				userID := uint(userIDFloat)
+				var user models.User
+				if global.DB.First(&user, userID).Error == nil {
+					c.Set("user", user)
+					c.Next()
+					return
+				}
+			}
+		}
+	}
+	// 没有有效 token 或解析失败，设置为游客
+	user := models.User{
+		Username: "游客",
+	}
+	c.Set("user", user)
+	c.Next()
+}
+
 // 验证登陆状态
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {

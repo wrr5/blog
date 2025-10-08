@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ShowHomePage(c *gin.Context) {
+func ShowAboutPage(c *gin.Context) {
 	user, _ := c.Get("user")
-	c.HTML(http.StatusOK, "home-index.html", gin.H{
+	c.HTML(http.StatusOK, "about-index.html", gin.H{
 		"user":        user,
 		"CurrentPath": c.Request.URL.Path,
 	})
