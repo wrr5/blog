@@ -12,7 +12,10 @@ import (
 )
 
 func Admin(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin-index.html", gin.H{})
+	user, _ := c.Get("user")
+	c.HTML(http.StatusOK, "admin-index.html", gin.H{
+		"user": user,
+	})
 }
 
 func ShowAdminCategoriesPage(c *gin.Context) {

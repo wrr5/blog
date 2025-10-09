@@ -6,9 +6,11 @@
     <title>我的文章</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
-<body>
+<body class="d-flex flex-column">
     {{template "navbar" .}}
-    <h1>我的文章</h1>
+    <main class="flex-grow-1 p-3 d-flex flex-column">
+        <h1>我的文章</h1>
+    </main>
     <script src="/static/js/bootstrap.bundle.js"></script>
 </body>
 </html>

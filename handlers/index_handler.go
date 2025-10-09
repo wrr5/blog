@@ -24,7 +24,8 @@ func ShowIndex(c *gin.Context) {
 	offset := (page - 1) * pageSize
 
 	var articles []models.Article
-
+	var categories []models.Category
+	global.DB.Find(&categories)
 	var total int64
 	// 先获取总记录数
 	global.DB.Model(&models.Article{}).Count(&total)
@@ -46,6 +47,7 @@ func ShowIndex(c *gin.Context) {
 		"user":       user,
 		"title":      "文章列表",
 		"articles":   articles,
+		"categories": categories,
 		"Pagination": Pagination,
 	})
 }

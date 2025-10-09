@@ -68,14 +68,14 @@
         <div class="collapse navbar-collapse" id="mobileNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link {{ if eq .CurrentPath " /admin/categories" }}active{{ end }}"
+                    <a class="nav-link {{ if eq .CurrentPath "/admin/categories" }}active{{ end }}"
                         href="/admin/categories">
                         <i class="bi bi-tags me-2"></i>
                         文章类别管理
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ if eq .CurrentPath " /admin/users" }}active{{ end }}" href="/admin/users">
+                    <a class="nav-link {{ if eq .CurrentPath "/admin/users" }}active{{ end }}" href="/admin/users">
                         <i class="bi bi-people me-2"></i>
                         用户管理
                     </a>
@@ -103,7 +103,7 @@
 <div class="d-lg-none" style="height: 60px;"></div>
 
 <!-- 侧边导航栏 - 桌面端 -->
-<div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style="width: 280px; min-height: 100vh;">
+<div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style="width: 260px; min-height: 100vh;">
     <a href="/admin" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
         <img src="/static/images/logo.jpg" alt="Logo" width="32" height="32" class="rounded-circle me-2">
         <span class="fs-4">管理后台</span>
@@ -111,14 +111,14 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
         <li>
-            <a href="/admin/categories" class="nav-link text-white {{ if eq .CurrentPath " /admin/categories" }}active{{
+            <a href="/admin/categories" class="nav-link text-white {{ if eq .CurrentPath "/admin/categories" }}active{{
                 else }} {{ end }}">
                 <i class="bi bi-tags me-2"></i>
                 文章类别管理
             </a>
         </li>
         <li>
-            <a href="/admin/users" class="nav-link text-white {{ if eq .CurrentPath " /admin/users" }}active{{ else }}
+            <a href="/admin/users" class="nav-link text-white {{ if eq .CurrentPath "/admin/users" }}active{{ else }}
                 {{ end }}">
                 <i class="bi bi-people me-2"></i>
                 用户管理
