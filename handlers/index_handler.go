@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,16 +22,31 @@ func ShowIndex(c *gin.Context) {
 	size := config.AppConfig.Page.Size
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", size))
+	categoryID := c.Query("category") // 获取分类参数
+	id, _ := strconv.ParseUint(categoryID, 10, 0)
+	uintID := uint(id)
 	offset := (page - 1) * pageSize
 
 	var articles []models.Article
 	var categories []models.Category
 	global.DB.Find(&categories)
 	var total int64
-	// 先获取总记录数
-	global.DB.Model(&models.Article{}).Count(&total)
 
-	result := global.DB.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&articles)
+	// 构建查询
+	query := global.DB.Model(&models.Article{})
+
+	// 如果提供了分类ID，添加分类过滤条件
+	if uintID != 0 {
+		query = query.Where("category_id = ?", categoryID)
+	}
+
+	// 先获取总记录数（带分类条件）
+	query.Count(&total)
+
+	// 查询文章列表（带分类条件）
+	result := query.Preload("User").Preload("Category").Preload("Tags").
+		Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&articles)
+
 	if result.Error != nil {
 		c.JSON(500, gin.H{"error": "查询文章列表失败"})
 		return
@@ -43,11 +59,14 @@ func ShowIndex(c *gin.Context) {
 		BasePath:    "/",
 	}
 	Pagination.CalculateDisplayPages(7)
+	fmt.Println(uintID)
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"user":       user,
-		"title":      "文章列表",
-		"articles":   articles,
-		"categories": categories,
-		"Pagination": Pagination,
+		"user":            user,
+		"title":           "文章列表",
+		"articles":        articles,
+		"categories":      categories,
+		"Pagination":      Pagination,
+		"basePath":        "/",
+		"currentCategory": uintID, // 传递当前选中的分类给模板
 	})
 }

@@ -1,0 +1,26 @@
+{{define "classifier"}}
+<style>
+    .category-badge {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .category-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+<!-- 分类筛选区域 -->
+<div class="card glass-card mb-2">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">文章分类</h5>
+            <a href="/articles/create" class="btn btn-success">发布文章</a>
+        </div>
+        <a href="{{.basePath}}" class="badge {{ if eq .currentCategory 0 }}bg-primary{{else}}bg-secondary{{ end }} category-badge" data-category=0>全部</a>
+        {{range .categories}}
+        <a href="{{$.basePath}}?category={{.ID}}" class="badge {{ if eq $.currentCategory .ID }}bg-primary{{else}}bg-secondary{{ end }} category-badge" data-category={{.ID}}>{{.Name}}</a>
+        {{end}}
+    </div>
+</div>
+{{end}}

@@ -12,20 +12,7 @@
 <body class="d-flex flex-column">
     {{template "navbar" .}}
     <main class="flex-grow-1 p-3 d-flex flex-column">
-        <!-- 分类筛选区域 -->
-        <div class="category-filter">
-            <h6 class="text-muted mb-3">文章分类</h6>
-            <div class="d-flex flex-wrap">
-                <span class="badge category-badge bg-secondary active">全部</span>
-                {{range .categories}}
-                <span class="badge category-badge bg-secondary" data-category="{{.ID}}">{{.Name}}</span>
-                {{end}}
-            </div>
-        </div>
-
-        <div>
-            <a href="/articles/create" class="btn btn-success" style="margin: 5px;">发布文章</a>
-        </div>
+        {{template "classifier" .}}
 
         <div class="list-group transparent-list-group text-center">
             {{range .articles}}
