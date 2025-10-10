@@ -44,7 +44,7 @@ func ShowIndex(c *gin.Context) {
 	query.Count(&total)
 
 	// 查询文章列表（带分类条件）
-	result := query.Preload("User").Preload("Category").Preload("Tags").
+	result := query.Preload("User").Preload("Category").
 		Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&articles)
 
 	if result.Error != nil {

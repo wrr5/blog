@@ -17,9 +17,11 @@
             <h5 class="card-title">文章分类</h5>
             <a href="/articles/create" class="btn btn-success">发布文章</a>
         </div>
-        <a href="{{.basePath}}" class="badge {{ if eq .currentCategory 0 }}bg-primary{{else}}bg-secondary{{ end }} category-badge" data-category=0>全部</a>
+        <a href="{{.basePath}}" class="badge {{ if eq .currentCategory 0 }}bg-primary{{else}}bg-secondary{{ end }} category-badge" style="text-decoration: none;" data-category=0>
+            全部</a>
         {{range .categories}}
-        <a href="{{$.basePath}}?category={{.ID}}" class="badge {{ if eq $.currentCategory .ID }}bg-primary{{else}}bg-secondary{{ end }} category-badge" data-category={{.ID}}>{{.Name}}</a>
+        <a href="{{$.basePath}}?category={{.ID}}" class="badge {{ if eq $.currentCategory .ID }}bg-primary{{else}}bg-secondary{{ end }} category-badge" style="text-decoration: none;" data-category={{.ID}}>
+            {{.Name}}</a>
         {{end}}
     </div>
 </div>

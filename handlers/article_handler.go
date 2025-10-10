@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -96,10 +97,14 @@ func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
 		User      struct {
 			Username string
 		}
+		Category struct {
+			ID   uint
+			Name string
+		}
 	}
 	var article models.Article
 	articleID := c.Param("id")
-	global.DB.Preload("User").First(&article, articleID)
+	global.DB.Preload("Category").Preload("User").First(&article, articleID)
 	article.Content = mdToHTML(article.Content)
 
 	// 将markdown转换为HTML，并转换为template.HTML类型
@@ -116,7 +121,15 @@ func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
 		}{
 			Username: article.User.Username,
 		},
+		Category: struct {
+			ID   uint
+			Name string
+		}{
+			ID:   article.Category.ID,
+			Name: article.Category.Name,
+		},
 	}
+	fmt.Print()
 	c.HTML(http.StatusOK, "article.html", gin.H{
 		"user_id": c.GetUint("user_id"),
 		"article": newArticle,
