@@ -10,40 +10,87 @@
     <!-- 集成vditorMD编辑器 -->
     <link rel="stylesheet" href="https://unpkg.com/vditor/dist/index.css" />
     <script src="https://unpkg.com/vditor/dist/index.min.js"></script>
-
     <style>
-        * {
+        .container {
+            width: 80%;
+        }
+        .row {
             margin: 5px;
+        }
+        .input-group-text {
+            width: 120px;
+        }
+        #vditor {
+            min-height: 400px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 10px;
         }
 
         #vditor .vditor-reset img {
-            max-width: 100%;
+            max-width: 80%;
             height: auto;
+        }
+
+        .page-wrapper {
+            padding: 20px 0;
         }
     </style>
     {{template "bgc" .}}
 </head>
 
 <body>
-    <div class="container text-center card" style="width: 80%;">
-        <div class="row">
-            <h3>作者: {{.article.User.Username}}</h3>
-            <div class="input-group flex-nowrap">
-                <span class="input-group-text" id="addon-wrapping" style="margin: 0;">标题</span>
-                <input type="text" class="form-control" aria-label="标题" style="margin: 0;"
-                    aria-describedby="addon-wrapping" id="putTitle" name="title" value="{{.article.Title}}" required>
+    <div class="page-wrapper">
+        <div class="container text-center card">
+            <!-- 作者信息行 -->
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h3>作者: {{.article.User.Username}}</h3>
+                </div>
             </div>
-            <!-- <input type="text" class="form-control" id="putTitle" name="title" value="{{.article.Title}}" required> -->
-            <div id="vditor"></div>
             
-        </div>
-        <div class="row">
-            <div class="col">
-                <button onclick="saveContent()" class="btn btn-success">更新文章</button>
-            <a href="javascript:history.back()" class="btn btn-secondary">返回</a>
+            <!-- 标题输入行 -->
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="input-group-text">标题</span>
+                        <input type="text" class="form-control" id="Title" name="title" value="{{.article.Title}}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分类选择行 -->
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="input-group-text">选择分类</span>
+                        <select class="form-select" id="categorySelect" aria-label="选择分类">
+                            <option value="0">请选择...</option>
+                            {{range .categories}}
+                            <option {{ if eq $.article.Category.ID .ID }}selected{{ end }} value="{{.ID}}">{{.Name}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 编辑器行 -->
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div id="vditor">这里是Markdown编辑器区域</div>
+                </div>
+            </div>
+            
+            <!-- 按钮行 -->
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <button onclick="saveContent()" class="btn btn-success">更新文章</button>
+                    <a href="javascript:history.back()" class="btn btn-secondary">返回</a>
+                </div>
             </div>
         </div>
     </div>
+
     <script src="/static/js/bootstrap.bundle.js"></script>
     <script>
         // MD
@@ -63,8 +110,9 @@
 
         function saveContent() {
             const data = {
-                title: document.getElementById('putTitle').value,
+                title: document.getElementById('Title').value,
                 content: content = vditor.getValue(),
+                category_id: document.getElementById('categorySelect').value,
             }
 
             // 验证标题和内容

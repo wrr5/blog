@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"time"
 
 	"gitee.com/wwgzr/blog/global"
@@ -23,17 +24,22 @@ func NewArticleHanders() *ArticleHanders {
 }
 
 func (h *ArticleHanders) ShowCreateArticlePage(c *gin.Context) {
+	var categories []models.Category
+	global.DB.Find(&categories)
+
 	if username, ok := c.Get("username"); ok {
 		c.HTML(http.StatusOK, "create.html", gin.H{
-			"username": username,
+			"username":   username,
+			"categories": categories,
 		})
 	}
 }
 
 func (h *ArticleHanders) CreateArticle(c *gin.Context) {
 	type CreateArticleRequest struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		CategoryId string `json:"category_id"`
 	}
 	var newArticle CreateArticleRequest
 	if err := c.BindJSON(&newArticle); err != nil {
@@ -51,27 +57,40 @@ func (h *ArticleHanders) CreateArticle(c *gin.Context) {
 			})
 			return
 		}
+	}
 
-		// 创建文章对象
-		article := models.Article{
-			Title:   newArticle.Title,
-			Content: newArticle.Content,
-			User:    user,
-		}
-
-		result = global.DB.Create(&article)
-		if result.Error != nil {
-			c.HTML(http.StatusOK, "create.html", gin.H{
-				"error": result.Error,
-			})
+	var article models.Article
+	// 创建文章对象
+	var categoryID *uint
+	if newArticle.CategoryId != "0" {
+		id, err := strconv.ParseUint(newArticle.CategoryId, 10, 32)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "无效的分类ID"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"message": "发布成功",
-			"article": article, // 返回创建的文章数据
-		})
-		// c.Redirect(http.StatusFound, "/articles")
+		idUint := uint(id)
+		categoryID = &idUint
 	}
+	article = models.Article{
+		Title:      newArticle.Title,
+		Content:    newArticle.Content,
+		User:       user,
+		CategoryID: categoryID,
+	}
+
+	result := global.DB.Create(&article)
+	if result.Error != nil {
+		c.HTML(http.StatusOK, "create.html", gin.H{
+			"error": result.Error,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "发布成功",
+		"article": article, // 返回创建的文章数据
+	})
+	// c.Redirect(http.StatusFound, "/articles")
+
 }
 
 // Markdown 转 HTML
@@ -140,7 +159,10 @@ func (h *ArticleHanders) ShowArticleEdit(c *gin.Context) {
 	// 获取文章id
 	id := c.Param("id")
 	var article models.Article
-	global.DB.Preload("User").First(&article, id)
+	global.DB.Preload("User").Preload("Category").First(&article, id)
+
+	var categories []models.Category
+	global.DB.Find(&categories)
 
 	// 获取当前用户登陆的id
 	userID := c.GetUint("user_id")
@@ -149,16 +171,17 @@ func (h *ArticleHanders) ShowArticleEdit(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
 	c.HTML(http.StatusOK, "edit.html", gin.H{
-		"article": article,
+		"article":    article,
+		"categories": categories,
 	})
 }
 
 func (h *ArticleHanders) UpdateArticle(c *gin.Context) {
 	type UpdateArticleRequest struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		CategoryId string `json:"category_id"`
 	}
 	id := c.Param("id")
 	var article models.Article
@@ -170,10 +193,23 @@ func (h *ArticleHanders) UpdateArticle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println(req.CategoryId)
 
+	// 创建文章对象
+	var categoryID *uint
+	if req.CategoryId != "0" {
+		id, err := strconv.ParseUint(req.CategoryId, 10, 32)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "无效的分类ID"})
+			return
+		}
+		idUint := uint(id)
+		categoryID = &idUint
+	}
 	// 修改文章
 	article.Title = req.Title
 	article.Content = req.Content
+	article.CategoryID = categoryID
 	global.DB.Save(&article)
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "修改成功",
