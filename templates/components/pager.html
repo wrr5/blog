@@ -11,7 +11,7 @@
         {{ else }}
         <li class="page-item">
             <a class="page-link"
-                href="{{.Pagination.BasePath}}?page={{.Pagination.PrevPage}}&pageSize={{.Pagination.PageSize}}">上一页</a>
+                href="{{.Pagination.BasePath}}page={{.Pagination.PrevPage}}&pageSize={{.Pagination.PageSize}}">上一页</a>
         </li>
         {{ end }}
 
@@ -23,7 +23,7 @@
         <!-- 第一页 -->
         {{ if .Pagination.HasPrevEllipsis }}
         <li class="page-item">
-            <a class="page-link" href="{{$basePath}}?page=1&pageSize={{$pageSize}}">1</a>
+            <a class="page-link" href="{{$basePath}}page=1&pageSize={{$pageSize}}">1</a>
         </li>
         <li class="page-item disabled">
             <span class="page-link">...</span>
@@ -38,7 +38,7 @@
         </li>
         {{ else }}
         <li class="page-item">
-            <a class="page-link" href="{{$basePath}}?page={{$page}}&pageSize={{$pageSize}}">{{ $page }}</a>
+            <a class="page-link" href="{{$basePath}}page={{$page}}&pageSize={{$pageSize}}">{{ $page }}</a>
         </li>
         {{ end }}
         {{ end }}
@@ -50,7 +50,7 @@
         </li>
         <li class="page-item">
             <a class="page-link"
-                href="{{$basePath}}?page={{.Pagination.TotalPages}}&pageSize={{$pageSize}}">{{.Pagination.TotalPages}}</a>
+                href="{{$basePath}}page={{.Pagination.TotalPages}}&pageSize={{$pageSize}}">{{.Pagination.TotalPages}}</a>
         </li>
         {{ end }}
 
@@ -62,7 +62,7 @@
         {{ else }}
         <li class="page-item">
             <a class="page-link"
-                href="{{.Pagination.BasePath}}?page={{.Pagination.NextPage}}&pageSize={{.Pagination.PageSize}}">下一页</a>
+                href="{{.Pagination.BasePath}}page={{.Pagination.NextPage}}&pageSize={{.Pagination.PageSize}}">下一页</a>
         </li>
         {{ end }}
     </ul>

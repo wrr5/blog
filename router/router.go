@@ -2,6 +2,8 @@
 package router
 
 import (
+	"net/url"
+	"strconv"
 	"text/template"
 
 	"gitee.com/wwgzr/blog/handlers"
@@ -13,7 +15,8 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
-		"iterate": pageIterate,
+		"iterate":          pageIterate,
+		"buildCategoryURL": buildCategoryURL,
 	})
 	// 注册文章相关路由
 	setIndexRoutes(r)
@@ -155,4 +158,20 @@ func pageIterate(start, end int) []int {
 		items[i] = start + i
 	}
 	return items
+}
+
+func buildCategoryURL(currentURL string, categoryID uint) string {
+	u, err := url.Parse(currentURL)
+	if err != nil {
+		return ""
+	}
+
+	query := u.Query()
+	query.Del("category")
+	query.Set("category", strconv.FormatUint(uint64(categoryID), 10))
+	query.Del("page")
+	query.Del("pageSize")
+
+	u.RawQuery = query.Encode()
+	return u.String()
 }

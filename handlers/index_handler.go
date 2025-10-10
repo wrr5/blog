@@ -52,11 +52,23 @@ func ShowIndex(c *gin.Context) {
 		return
 	}
 	totalPages := int((total + int64(pageSize) - 1) / int64(pageSize))
+	// 获取当前请求的所有查询参数
+	queryParams := c.Request.URL.Query()
+
+	// 移除分页相关的参数，避免重复
+	queryParams.Del("page")
+	queryParams.Del("pageSize")
+
+	// 构建基础路径，包含现有查询参数
+	basePath := c.Request.URL.Path + "?" + queryParams.Encode()
+	if len(queryParams) > 0 {
+		basePath += "&"
+	}
 	Pagination := tools.Pagination{
 		CurrentPage: page,
 		TotalPages:  totalPages,
 		PageSize:    pageSize,
-		BasePath:    "/",
+		BasePath:    basePath,
 	}
 	Pagination.CalculateDisplayPages(7)
 	fmt.Println(uintID)
@@ -66,7 +78,7 @@ func ShowIndex(c *gin.Context) {
 		"articles":        articles,
 		"categories":      categories,
 		"Pagination":      Pagination,
-		"basePath":        "/",
 		"currentCategory": uintID, // 传递当前选中的分类给模板
+		"CurrentURL":      c.Request.URL.String(),
 	})
 }
