@@ -83,7 +83,7 @@ sudo systemctl stop blog.service # 停止服务
 # 查看虚拟机ip
 ip addr show
 
-# 更新项目
+#### 更新项目
 # 进入项目目录
 cd /home/wrr/blog
 # 从Git拉取最新代码

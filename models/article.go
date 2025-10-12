@@ -7,9 +7,10 @@ import (
 )
 
 type Article struct {
-	Id      uint   `json:"id" gorm:"primarykey;autoIncrement:true"`
-	Title   string `json:"title" gorm:"type:varchar(255);not null"`
-	Content string `json:"content" gorm:"type:text;not null"`
+	Id       uint   `json:"id" gorm:"primarykey;autoIncrement:true"`
+	Title    string `json:"title" gorm:"type:varchar(255);not null"`
+	Content  string `json:"content" gorm:"type:text;not null"`
+	IsPublic bool   `json:"is_public" gorm:"default:true"` // 是否公开
 
 	// 添加外键关联 User
 	UserID uint `json:"user_id" gorm:"not null;index"`                                                             // 外键字段

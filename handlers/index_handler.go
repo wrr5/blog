@@ -33,7 +33,7 @@ func ShowIndex(c *gin.Context) {
 	var total int64
 
 	// 构建查询
-	query := global.DB.Model(&models.Article{})
+	query := global.DB.Model(&models.Article{}).Where("is_public = ?", true)
 
 	// 如果提供了分类ID，添加分类过滤条件
 	if uintID != 0 {
