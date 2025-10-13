@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -24,7 +23,7 @@ func ShowIndex(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", size))
 	categoryID := c.Query("category") // 获取分类参数
 	id, _ := strconv.ParseUint(categoryID, 10, 0)
-	uintID := uint(id)
+	categoryUintID := uint(id)
 	offset := (page - 1) * pageSize
 
 	var articles []models.Article
@@ -36,7 +35,7 @@ func ShowIndex(c *gin.Context) {
 	query := global.DB.Model(&models.Article{}).Where("is_public = ?", true)
 
 	// 如果提供了分类ID，添加分类过滤条件
-	if uintID != 0 {
+	if categoryUintID != 0 {
 		query = query.Where("category_id = ?", categoryID)
 	}
 
@@ -71,14 +70,13 @@ func ShowIndex(c *gin.Context) {
 		BasePath:    basePath,
 	}
 	Pagination.CalculateDisplayPages(7)
-	fmt.Println(uintID)
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"user":            user,
 		"title":           "文章列表",
 		"articles":        articles,
 		"categories":      categories,
 		"Pagination":      Pagination,
-		"currentCategory": uintID, // 传递当前选中的分类给模板
+		"currentCategory": categoryUintID, // 传递当前选中的分类给模板
 		"CurrentURL":      c.Request.URL.String(),
 	})
 }

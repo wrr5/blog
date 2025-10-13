@@ -2,8 +2,11 @@ package tools
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
+	"gitee.com/wwgzr/blog/models"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -114,4 +117,19 @@ func (p *Pagination) CalculateDisplayPages(maxDisplay int) {
 	// 判断是否需要省略号
 	p.HasPrevEllipsis = start > 1
 	p.HasNextEllipsis = end < p.TotalPages
+}
+
+// 如果文章未公开，则拒绝来自非作者且非管理员的访问
+func VisitPrivateArticle(c *gin.Context, article models.Article) bool {
+	user, _ := c.Get("user")
+	loginUser := user.(models.User)
+	// 如果文章未公开，则拒绝来自非作者且非管理员的访问
+	if !article.IsPublic {
+		if loginUser.ID != article.UserID && !loginUser.IsAdmin {
+			c.JSON(http.StatusForbidden, gin.H{"error": "无访问权限"})
+			c.Abort()
+			return false
+		}
+	}
+	return true
 }

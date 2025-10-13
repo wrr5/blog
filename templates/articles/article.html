@@ -37,12 +37,12 @@
             <a href="/articles/{{.article.Id}}" id="delete-link"
                 class="card-link link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">删除</a>
             {{end}}
-            <a href="/"
-                class="card-link link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">返回文章列表</a>
             {{if .article.Category.Name}}
             <a href="/?category={{.article.Category.ID}}"
                 class="card-link link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">分类：{{.article.Category.Name}}</a>
             {{end}}
+            <a href="/"
+                class="card-link link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">返回文章列表</a>
         </div>
     </div>
     <script src="/static/js/bootstrap.bundle.js"></script>

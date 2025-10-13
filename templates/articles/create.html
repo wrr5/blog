@@ -59,7 +59,7 @@
             
             <!-- 分类选择行 -->
             <div class="row justify-content-center">
-                <div class="col-12">
+                <div class="col-6">
                     <div class="input-group">
                         <span class="input-group-text">选择分类</span>
                         <select class="form-select" id="categorySelect" aria-label="选择分类">
@@ -67,6 +67,15 @@
                             {{range .categories}}
                             <option value="{{.ID}}">{{.Name}}</option>
                             {{end}}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="input-group">
+                        <span class="input-group-text">是否公开</span>
+                        <select class="form-select" id="IsPublicSelect" aria-label="是否公开">
+                            <option selected value=1>是</option>
+                            <option value=0>否</option>
                         </select>
                     </div>
                 </div>
@@ -109,6 +118,7 @@
                 title: document.getElementById('Title').value,
                 content: content = vditor.getValue(),
                 category_id: document.getElementById('categorySelect').value,
+                is_public: document.getElementById('IsPublicSelect').value,
             }
             // 验证标题和内容
             if (!data.title) {
