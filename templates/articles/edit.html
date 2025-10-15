@@ -76,8 +76,8 @@
                     <div class="input-group">
                         <span class="input-group-text">是否公开</span>
                         <select class="form-select" id="IsPublicSelect" aria-label="是否公开">
-                            <option selected value=1>是</option>
-                            <option value=0>否</option>
+                            <option {{ if .article.IsPublic }}selected{{ end }} value=1>是</option>
+                            <option {{ if not .article.IsPublic }}selected{{ end }} value=0>否</option>
                         </select>
                     </div>
                 </div>

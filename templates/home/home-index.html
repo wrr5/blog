@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的文章</title>
+    <title>{{.title}}</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
 <body class="d-flex flex-column">
     {{template "navbar" .}}
     <main class="flex-grow-1 p-3 d-flex flex-column">
-        <h1>我的文章</h1>
-        <div>
-            <a href="/articles/create" class="btn btn-success" style="margin: 5px;">发布文章</a>
+        {{template "classifier" .}}
+
+        <div class="list-group transparent-list-group text-center">
+            {{range .articles}}
+            <a href="/articles/{{.Id}}" class="list-group-item list-group-item-action">{{.Title}}</a>
+            {{else}}
+            <a href="#" class="list-group-item list-group-item-action">暂无数据</a>
+            {{end}}
+        </div>
+
+        <div class="mt-auto">>
+            {{template "pager" .}}
         </div>
     </main>
     <script src="/static/js/bootstrap.bundle.js"></script>

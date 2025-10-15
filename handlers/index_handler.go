@@ -77,6 +77,7 @@ func ShowIndex(c *gin.Context) {
 		"categories":      categories,
 		"Pagination":      Pagination,
 		"currentCategory": categoryUintID, // 传递当前选中的分类给模板
-		"CurrentURL":      c.Request.URL.String(),
+		"BaseURL":         "/",
+		"CurrentURL":      c.Request.URL.Path,
 	})
 }

@@ -3,7 +3,9 @@ package handlers
 import (
 	"html/template"
 	"net/http"
+	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"gitee.com/wwgzr/blog/global"
@@ -155,9 +157,18 @@ func (h *ArticleHanders) ShowArticleDetail(c *gin.Context) {
 			Name: article.Category.Name,
 		},
 	}
+	// 判断是从首页还是从我的文章跳转支持
+	referer := c.Request.Header.Get("Referer")
+	lastPart := path.Base(referer)
+	var BaseURL string
+	// 根路径是"home"是从我的文章跳转至此
+	if strings.HasPrefix(lastPart, "home") {
+		BaseURL = "home"
+	}
 	c.HTML(http.StatusOK, "article.html", gin.H{
 		"user_id": c.GetUint("user_id"),
 		"article": newArticle,
+		"BaseURL": BaseURL,
 	})
 }
 
