@@ -72,7 +72,7 @@ func ShowIndex(c *gin.Context) {
 	Pagination.CalculateDisplayPages(7)
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"user":            user,
-		"title":           "文章列表",
+		"title":           "首页",
 		"articles":        articles,
 		"categories":      categories,
 		"Pagination":      Pagination,

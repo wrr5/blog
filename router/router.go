@@ -26,6 +26,7 @@ func SetupRouter() *gin.Engine {
 	setupUploadRoutes(r)
 	setupAdminRoutes(r)
 	setupCategoryRoutes(r)
+	setupCommentRoutes(r)
 
 	// 根路径跳转
 	r.GET("/", middleware.OptionalAuthMiddleware, handlers.ShowIndex)
@@ -146,6 +147,17 @@ func setupAdminRoutes(r *gin.Engine) {
 		adminGroup.GET("", handlers.Admin)
 		adminGroup.GET("/categories", handlers.ShowAdminCategoriesPage)
 		adminGroup.GET("/users", handlers.ShowAdminUsersPage)
+	}
+}
+
+func setupCommentRoutes(r *gin.Engine) {
+	// 评论路由组
+	adminGroup := r.Group("/comments")
+	adminGroup.Use(middleware.AuthMiddleware())
+	{
+		adminGroup.GET("/:article_id", handlers.GetComment)
+		adminGroup.POST("", handlers.CreateComment)
+		adminGroup.DELETE("/:id", handlers.DeleteComment)
 	}
 }
 

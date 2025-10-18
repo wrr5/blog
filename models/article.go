@@ -23,6 +23,9 @@ type Article struct {
 	// 关联标签 (一篇文章可以有多个标签)
 	Tags []Tag `json:"tags,omitempty" gorm:"many2many:article_tags;" `
 
+	// 关联评论，不推荐！
+	// Comments []Comment `json:"comments" gorm:"foreignKey:ArticleID"`
+
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"` // 自动创建时间
 	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime"` // 自动更新时间
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`

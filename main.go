@@ -16,7 +16,7 @@ func main() {
 	r.LoadHTMLGlob("templates/**/*.html")
 	r.Static("/static", "./static")
 	r.Static("/uploads", "./uploads")
-	r.Use(favicon.New("./static/1.ico"))
+	r.Use(favicon.New("./static/images/favicon.ico"))
 
 	r.Run(":" + config.AppConfig.Server.Port)
 }
