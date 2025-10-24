@@ -26,6 +26,10 @@ type Article struct {
 	// 关联评论，不推荐！
 	// Comments []Comment `json:"comments" gorm:"foreignKey:ArticleID"`
 
+	// ViewCount    int `json:"view_count" gorm:"default:0"`     // 阅读数
+	// LikeCount    int `json:"like_count" gorm:"default:0"`     // 点赞数
+	// CommentCount int `json:"comment_count" gorm:"default:0"`  // 评论数
+
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"` // 自动创建时间
 	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime"` // 自动更新时间
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`

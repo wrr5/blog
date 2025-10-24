@@ -4,8 +4,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/static/images/logo.jpg" alt="Logo" width="30" height="30">
-            <span style="color: azure;font-weight: 600;text-shadow: 0 1px 2px rgba(0,0,0,0.3);font-size: 1.2rem;letter-spacing: 0.5px;">首页</span>
+            <img src="/static/images/favicon.ico" alt="Logo" width="30" height="30" style="margin-bottom: 5px;">
+            <span style="color: azure;font-weight: 600;text-shadow: 0 1px 2px rgba(0,0,0,0.3);font-size: 1.2rem;letter-spacing: 0.5px;">猪博客</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,23 +24,23 @@
 
             <!-- 右侧导航项 -->
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                <li class="nav-item mb-1">
                     <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button class="btn btn-outline-primary" type="submit">Search</button>
+                        <input class="form-control me-2" type="search" placeholder="输入标题或内容..." aria-label="Search" />
+                        <button class="btn btn-outline-primary" type="submit" style="min-width: 80px;">搜索</button>
                     </form>
                 </li>
                 {{if .user.Email}}
                 {{if .user.IsAdmin}}
-                <li class="nav-item">
+                <li class="nav-item mb-1">
                     <a class="btn btn-outline-info" href="/admin" style="margin-left: 5px;">管理后台</a>
                 </li>
                 {{end}}
-                <li class="nav-item">
+                <li class="nav-item mb-1">
                     <a class="btn btn-outline-danger" href="/auth/logout" style="margin-left: 5px; margin-top: 2px;">退出登录</a>
                 </li>
                 {{else}}
-                <li class="nav-item">
+                <li class="nav-item mb-1">
                     <a class="btn btn-outline-success" href="/auth/login" style="margin-left: 5px;">登录</a>
                 </li>
                 {{end}}
@@ -52,13 +52,34 @@
 
 {{define "navbar-admin"}}
 {{template "bgc" .}}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* 移动端：垂直布局 */
+    @media (max-width: 991.98px) {
+        body {
+            flex-direction: column !important;
+        }
+    }
+    
+    /* 桌面端：水平布局 */
+    @media (min-width: 992px) {
+        body {
+            flex-direction: row !important;
+        }
+    }
+</style>
 <link rel="stylesheet" href="/static/css/style.css">
 
 <!-- 移动端顶部导航栏 -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-lg-none fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="/admin">
-            <img src="/static/images/logo.jpg" alt="Logo" width="30" height="30" class="rounded-circle me-2">
+            <img src="/static/images/admin-logo.png" alt="Logo" width="30" height="30" class="rounded-circle me-2">
             <span>管理后台</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar"
@@ -105,7 +126,7 @@
 <!-- 侧边导航栏 - 桌面端 -->
 <div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style="width: 260px; min-height: 100vh;">
     <a href="/admin" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <img src="/static/images/logo.jpg" alt="Logo" width="32" height="32" class="rounded-circle me-2">
+        <img src="/static/images/admin-logo.png" alt="Logo" width="32" height="32" class="rounded-circle me-2">
         <span class="fs-4">管理后台</span>
     </a>
     <hr>
@@ -129,7 +150,7 @@
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1"
             data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="/static/images/logo.jpg" alt="用户头像" width="32" height="32" class="rounded-circle me-2">
+            <img src="/static/images/favicon.ico" alt="用户头像" width="32" height="32" class="rounded-circle me-2">
             <strong>管理员</strong>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">

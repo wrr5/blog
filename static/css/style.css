@@ -1,25 +1,80 @@
-.glass-card {
-    background-color: rgba(255, 255, 255, 0.3);
-    /* 背景透明度 */
-    backdrop-filter: blur(3px);
-    /* 可选：高级毛玻璃效果 */
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    /* 可选：半透明边框 */
-}
-
+/* 透明列表组样式 */
 .transparent-list-group {
     padding: 0;
     background-color: rgba(255, 255, 255, 0.3);
-    /* 背景透明度 */
     backdrop-filter: blur(3px);
-    /* 可选：高级毛玻璃效果 */
     border: 1px solid rgba(255, 255, 255, 0.6);
-    /* 可选：半透明边框 */
 }
 
 .transparent-list-group .list-group-item {
     background-color: rgba(255, 255, 255, 0.0);
-    /* 背景透明度 */
     border: 1px solid rgba(255, 255, 255, 0.6);
-    /* 可选：半透明边框 */
+}
+
+/* 毛玻璃卡片样式 */
+.glass-card {
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 毛玻璃徽章样式 */
+.glass-badge {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #333;
+    font-weight: normal;
+}
+
+/* 文章内容样式 */
+.article-summary {
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tags-container .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+.article-meta i {
+    opacity: 0.7;
+}
+
+.article-stats {
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    opacity: 0.7;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .article-stats {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    
+    .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .article-meta span {
+        margin-right: 0 !important;
+    }
 }

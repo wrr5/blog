@@ -13,11 +13,20 @@ import (
 
 func ShowIndex(c *gin.Context) {
 	user, _ := c.Get("user")
-	// if !exists {
-	// 	c.JSON(401, gin.H{"error": "请先登录"})
-	// 	c.Abort()
-	// 	return
-	// }
+
+	// 从jwt中获取登陆信息
+	var userID uint
+	token, err := c.Cookie("auth_token")
+	if err == nil && len(token) > 7 {
+		// 有 token，尝试解析
+		if claims, err := tools.ParseJWT(token[7:]); err == nil {
+			// token 有效，获取用户信息
+			if userIDFloat, ok := claims["user_id"].(float64); ok {
+				userID = uint(userIDFloat)
+			}
+		}
+	}
+
 	size := config.AppConfig.Page.Size
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", size))
@@ -32,7 +41,8 @@ func ShowIndex(c *gin.Context) {
 	var total int64
 
 	// 构建查询
-	query := global.DB.Model(&models.Article{}).Where("is_public = ?", true)
+	query := global.DB.Model(&models.Article{}).
+		Where("(is_public = ? OR (is_public = ? AND user_id = ?))", true, false, userID)
 
 	// 如果提供了分类ID，添加分类过滤条件
 	if categoryUintID != 0 {

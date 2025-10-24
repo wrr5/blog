@@ -3,7 +3,9 @@ package router
 
 import (
 	"net/url"
+	"regexp"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"gitee.com/wwgzr/blog/handlers"
@@ -17,6 +19,7 @@ func SetupRouter() *gin.Engine {
 	r.SetFuncMap(template.FuncMap{
 		"iterate":          pageIterate,
 		"buildCategoryURL": buildCategoryURL,
+		"sliceContent":     sliceContent,
 	})
 	// 注册文章相关路由
 	setIndexRoutes(r)
@@ -186,4 +189,34 @@ func buildCategoryURL(currentURL string, categoryID uint) string {
 
 	u.RawQuery = query.Encode()
 	return u.String()
+}
+
+func sliceContent(content string, length int) string {
+	// 移除Markdown格式的图片链接
+	re := regexp.MustCompile(`!\[.*?\]\(.*?\)`)
+	content = re.ReplaceAllString(content, "")
+
+	// 移除HTML格式的图片标签
+	re = regexp.MustCompile(`<img[^>]*>`)
+	content = re.ReplaceAllString(content, "")
+
+	// 移除普通的文件链接（以/uploads/开头的链接）
+	re = regexp.MustCompile(`\[.*?\]\(/uploads/[^)]+\)`)
+	content = re.ReplaceAllString(content, "")
+
+	// 移除纯URL链接
+	re = regexp.MustCompile(`https?://[^\s]+`)
+	content = re.ReplaceAllString(content, "")
+
+	// 清理多余的空格和换行
+	content = strings.TrimSpace(content)
+	re = regexp.MustCompile(`\s+`)
+	content = re.ReplaceAllString(content, " ")
+
+	// 截取内容
+	runes := []rune(content)
+	if len(runes) > length {
+		return string(runes[:length])
+	}
+	return content
 }
