@@ -12,7 +12,7 @@ Done:
     - 分类管理
     - // 用户管理
 - 评论系统
--m -"丰富和完善文章列表元素，显示更多信息"
+
 
 Todo:
 - 全文搜索功能(使用 Elasticsearch 或数据库全文索引)
@@ -103,6 +103,8 @@ sudo systemctl status gin-app.service
 
 ## 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+$env:GOOS="linux"
+$env:GOARCH="amd64" 
+$env:CGO_ENABLED="0"
+go build -buildvcs=false -ldflags="-s -w" -o order-service main.go
+
