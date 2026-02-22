@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Database DatabaseConfig
+	Redis    RedisConfig
 	Server   ServerConfig
 	JWT      JWTConfig
 	Page     PageConfig
@@ -19,6 +20,12 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	Name     string
+}
+
+type RedisConfig struct {
+	Host     string
+	Port     int
+	Password string
 }
 
 type ServerConfig struct {

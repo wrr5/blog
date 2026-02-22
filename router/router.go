@@ -30,6 +30,7 @@ func SetupRouter() *gin.Engine {
 	setupAdminRoutes(r)
 	setupCategoryRoutes(r)
 	setupCommentRoutes(r)
+	r.GET("/search", middleware.AuthMiddleware(), handlers.ShowSearchResult)
 
 	// 根路径跳转
 	r.GET("/", middleware.OptionalAuthMiddleware, handlers.ShowIndex)
