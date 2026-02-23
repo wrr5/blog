@@ -7,11 +7,65 @@ import (
 	"gitee.com/wwgzr/blog/config"
 	"gitee.com/wwgzr/blog/global"
 	"gitee.com/wwgzr/blog/models"
+	"gitee.com/wwgzr/blog/service"
 	"gitee.com/wwgzr/blog/tools"
 	"github.com/gin-gonic/gin"
 )
 
 func ShowIndex(c *gin.Context) {
+	// 1. 获取当前用户（假设中间件已注入 user 到 context）
+	user, _ := c.Get("user")
+	var userID uint
+	if u, ok := user.(models.User); ok {
+		userID = u.ID
+	}
+
+	// 2. 解析请求参数
+	size := config.AppConfig.Page.Size
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", size))
+	categoryID, _ := strconv.ParseUint(c.Query("category"), 10, 0)
+	categoryUintID := uint(categoryID)
+
+	// 3. 调用 Service 获取数据
+	articleSvc := service.NewArticleService()
+	articles, total, categories, err := articleSvc.GetHomePageData(userID, categoryUintID, page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询文章列表失败"})
+		return
+	}
+
+	// 4. 计算分页
+	totalPages := int((total + int64(pageSize) - 1) / int64(pageSize))
+	queryParams := c.Request.URL.Query()
+	queryParams.Del("page")
+	queryParams.Del("pageSize")
+	basePath := c.Request.URL.Path + "?" + queryParams.Encode()
+	if len(queryParams) > 0 {
+		basePath += "&"
+	}
+	pagination := tools.Pagination{
+		CurrentPage: page,
+		TotalPages:  totalPages,
+		PageSize:    pageSize,
+		BasePath:    basePath,
+	}
+	pagination.CalculateDisplayPages(7)
+
+	// 5. 渲染模板
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"user":            user,
+		"title":           "首页",
+		"articles":        articles,
+		"categories":      categories,
+		"Pagination":      pagination,
+		"currentCategory": categoryUintID,
+		"BaseURL":         "/",
+		"CurrentURL":      c.Request.URL.Path,
+	})
+}
+
+func ShowIndex_old(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	// 从jwt中获取登陆信息

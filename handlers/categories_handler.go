@@ -57,13 +57,13 @@ func GetCategory(c *gin.Context) {
 }
 
 func UpdateCategory(c *gin.Context) {
-	type CreateCategoryRequest struct {
+	type UpdateCategoryRequest struct {
 		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Slug        string `json:"slug"`
 		Description string `json:"description"`
 	}
-	var jsdate CreateCategoryRequest
+	var jsdate UpdateCategoryRequest
 	var category models.Category
 	if err := c.BindJSON(&jsdate); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

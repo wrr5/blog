@@ -10,8 +10,10 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
+	var users []models.User
+	global.DB.Find(&users)
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "用户列表",
+		"users": users,
 	})
 }
 
@@ -55,21 +57,42 @@ func CreateUser(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	id := c.Param("id")
+	var user models.User
+	global.DB.First(&user, id)
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "用户" + id + "信息",
+		"user": user,
 	})
 }
 
 func UpdateUser(c *gin.Context) {
+	type UpdateUserRequest struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		IsAdmin  bool   `json:"isAdmin"`
+	}
+	var jsdate UpdateUserRequest
+	var user models.User
+	if err := c.BindJSON(&jsdate); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	id := c.Param("id")
+	global.DB.First(&user, id)
+	user.Username = jsdate.Username
+	user.Password = jsdate.Password
+	user.IsAdmin = jsdate.IsAdmin
+	global.DB.Save(&user)
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "更新用户" + id + "信息",
+		"message": "修改成功",
+		"user":    user,
 	})
 }
 
 func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
+	var user models.User
+	global.DB.Delete(&user, id)
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "删除用户" + id + "信息",
+		"message": "删除成功",
 	})
 }

@@ -13,8 +13,8 @@ Done:
     - // 用户管理
 - 评论系统
 - 全文搜索功能(使用 Elasticsearch 或数据库全文索引)
-// feat: 实现标题与全文搜索功能
-// feat: 实现redis缓存机制
+
+// refactor: 按照Web标准化三层架构进行重构index页面结构
 
 Todo:
 - 阅读数，点赞数，评论数统计
