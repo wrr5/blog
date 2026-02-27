@@ -17,32 +17,35 @@ func GetUsers(c *gin.Context) {
 	})
 }
 
+type CreateUserRequest struct {
+	models.User        // 嵌入 User 结构体，包含 Username, Email, Password, IsAdmin 等字段
+	Password2   string `form:"password2" json:"password2" binding:"required"` // 确认密码
+}
+
 func CreateUser(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	var req CreateUserRequest
+	// ShouldBind 根据 Content-Type 自动解析 JSON 或表单
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if user.Password != c.PostForm("password2") {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "两次密码不一致！",
-		})
+
+	// 验证密码一致性
+	if req.Password != req.Password2 {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "两次密码不一致！"})
 		return
 	}
 
 	// 加密密码
-	hashPassword, err := tools.HashPassword(user.Password)
+	hashPassword, err := tools.HashPassword(req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	user.Password = hashPassword
+	req.User.Password = hashPassword
 
-	// 新增用户
-	result := global.DB.Create(&user)
+	// 创建用户
+	result := global.DB.Create(&req.User)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名或邮箱已存在"})
 		return
@@ -51,7 +54,7 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"message":  "注册成功",
 		"redirect": "/auth/login",
-		"user":     user,
+		"user":     req.User,
 	})
 }
 
@@ -67,6 +70,7 @@ func GetUser(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	type UpdateUserRequest struct {
 		Username string `json:"username"`
+		Email    string `json:"email"`
 		Password string `json:"password"`
 		IsAdmin  bool   `json:"isAdmin"`
 	}
@@ -79,7 +83,14 @@ func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	global.DB.First(&user, id)
 	user.Username = jsdate.Username
-	user.Password = jsdate.Password
+	user.Email = jsdate.Email
+	// 加密密码
+	hashPassword, err := tools.HashPassword(jsdate.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	user.Password = hashPassword
 	user.IsAdmin = jsdate.IsAdmin
 	global.DB.Save(&user)
 	c.JSON(http.StatusOK, gin.H{

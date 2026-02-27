@@ -3,14 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理员界面</title>
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <title>管理员界面 - 用户管理</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="d-flex">
     {{template "navbar-admin" .}}
-    <main class="flex-grow-1 p-3">
-        <h1>todo: 用户管理</h1>
+    <main class="flex-grow-1 p-3 d-flex flex-column">
+        <div>
+            <button class="btn btn-success" style="margin: 5px;" data-bs-toggle="modal"
+                data-bs-target="#userModal" onclick="setAddMode()">新增用户</button>
+        </div>
+        <div class="d-flex text-center">
+            <div class="list-group transparent-list-group flex-grow-1">
+                {{range .users}}
+                <div class="d-flex flex-column list-group-item">
+                    <div>
+                        <strong>用户名: {{.Username}}</strong> 
+                        {{if .IsAdmin}}<span class="badge bg-primary">管理员</span>{{end}}
+                        <br>
+                        <small>Email: {{.Email}}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-warning" style="margin: 5px;" data-bs-toggle="modal"
+                            data-bs-target="#userModal"
+                            onclick='editUser({{.ID}}, "{{.Username}}", "{{.Email}}", {{.IsAdmin}})'>修改</button>
+                        <button class="btn btn-danger" style="margin: 5px;" data-bs-toggle="modal"
+                            data-bs-target="#deleteConfirmModal"
+                            onclick="confirmDelete({{.ID}}, '{{.Username}}')">删除</button>
+                    </div>
+                </div>
+                {{else}}
+                <div class="list-group-item">暂无用户数据</div>
+                {{end}}
+            </div>
+        </div>
+        <div class="mt-auto">
+            {{template "pager" .}}
+        </div>
     </main>
+
+    <!-- 新增/修改用户模态框 -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">新增用户</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId" name="id">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <!-- 新增模式下的密码字段 -->
+                        <div id="addPasswordFields">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">密码</label>
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">确认密码</label>
+                                <input type="password" class="form-control" id="password2" name="password2">
+                            </div>
+                        </div>
+                        <!-- 编辑模式下的密码修改选项 -->
+                        <div id="editPasswordFields" style="display: none;">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="changePasswordCheck">
+                                <label class="form-check-label" for="changePasswordCheck">
+                                    修改密码
+                                </label>
+                            </div>
+                            <div id="editPasswordInputs" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="editPassword" class="form-label">新密码</label>
+                                    <input type="password" class="form-control" id="editPassword" name="password">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editPassword2" class="form-label">确认新密码</label>
+                                    <input type="password" class="form-control" id="editPassword2" name="password2">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="isAdmin" name="isAdmin">
+                            <label class="form-check-label" for="isAdmin">管理员</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">确认删除</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>确定要删除用户 "<span id="deleteUserName"></span>" 吗？此操作不可恢复！</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteUser()">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/js/bootstrap.bundle.js"></script>
+    <script>
+        // 模态框实例
+        const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+        const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+
+        let currentUserId = null;       // 当前操作的ID（删除用）
+        let method = '';                // 当前模式：POST 或 PUT
+
+        // 新增模式
+        function setAddMode() {
+            document.getElementById('modalTitle').textContent = '新增用户';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('isAdmin').checked = false;
+            // 显示新增密码区域，隐藏编辑密码区域
+            document.getElementById('addPasswordFields').style.display = 'block';
+            document.getElementById('editPasswordFields').style.display = 'none';
+            method = 'POST';
+        }
+
+        // 编辑模式
+        function editUser(id, username, email, isAdmin) {
+            document.getElementById('modalTitle').textContent = '修改用户';
+            document.getElementById('userId').value = id;
+            document.getElementById('username').value = username;
+            document.getElementById('email').value = email;
+            document.getElementById('isAdmin').checked = isAdmin;
+            // 隐藏新增密码区域，显示编辑密码选项
+            document.getElementById('addPasswordFields').style.display = 'none';
+            document.getElementById('editPasswordFields').style.display = 'block';
+            // 默认不显示密码输入框
+            document.getElementById('editPasswordInputs').style.display = 'none';
+            document.getElementById('changePasswordCheck').checked = false;
+            // 清空密码字段
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editPassword2').value = '';
+            method = 'PUT';
+        }
+
+        // 监听“修改密码”复选框
+        document.getElementById('changePasswordCheck').addEventListener('change', function(e) {
+            const show = e.target.checked;
+            document.getElementById('editPasswordInputs').style.display = show ? 'block' : 'none';
+            if (!show) {
+                // 如果不修改密码，清空密码字段
+                document.getElementById('editPassword').value = '';
+                document.getElementById('editPassword2').value = '';
+            }
+        });
+
+        // 确认删除
+        function confirmDelete(id, name) {
+            currentUserId = id;
+            document.getElementById('deleteUserName').textContent = name;
+            deleteConfirmModal.show();
+        }
+
+        // 保存用户（新增/修改）
+        function saveUser() {
+            // 构建基础数据
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                isAdmin: document.getElementById('isAdmin').checked
+            };
+
+            let url = '/users';
+            if (method === 'PUT') {
+                const id = document.getElementById('userId').value;
+                url += '/' + id;
+                // 编辑模式下，如果“修改密码”勾选且密码不为空，则包含密码
+                if (document.getElementById('changePasswordCheck').checked) {
+                    const pwd = document.getElementById('editPassword').value;
+                    const pwd2 = document.getElementById('editPassword2').value;
+                    if (pwd !== pwd2) {
+                        alert('两次输入的密码不一致');
+                        return;
+                    }
+                    if (pwd) {
+                        formData.password = pwd;
+                    } else {
+                        alert('密码不能为空');
+                        return;
+                    }
+                }
+                // 如果未勾选修改密码，则不传password字段（后端需支持忽略该字段）
+            } else {
+                // 新增模式，必须验证密码
+                const pwd = document.getElementById('password').value;
+                const pwd2 = document.getElementById('password2').value;
+                if (!pwd || !pwd2) {
+                    alert('密码不能为空');
+                    return;
+                }
+                if (pwd !== pwd2) {
+                    alert('两次输入的密码不一致');
+                    return;
+                }
+                formData.password = pwd;
+                formData.password2 = pwd2;
+            }
+
+            // 发送请求
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || '请求失败'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                userModal.hide();
+                location.reload(); // 简单刷新，可优化为局部更新
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('保存失败：' + error.message);
+            });
+        }
+
+        // 删除用户
+        function deleteUser() {
+            if (!currentUserId) return;
+            fetch('/users/' + currentUserId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || '删除失败'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                deleteConfirmModal.hide();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('删除失败：' + error.message);
+            });
+        }
+
+        // 模态框关闭后清理
+        document.getElementById('userModal').addEventListener('hidden.bs.modal', function () {
+            // 重置表单，避免影响下次打开
+            document.getElementById('userForm').reset();
+        });
+
+        document.getElementById('deleteConfirmModal').addEventListener('hidden.bs.modal', function () {
+            currentUserId = null;
+        });
+    </script>
 </body>
 </html>

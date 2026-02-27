@@ -52,7 +52,38 @@ func ShowAdminCategoriesPage(c *gin.Context) {
 }
 
 func ShowAdminUsersPage(c *gin.Context) {
+	var users []models.User
+
+	// 获取分页参数
+	size := config.AppConfig.Page.Size
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", size))
+	offset := (page - 1) * pageSize
+
+	// 获取总记录数
+	var total int64
+	global.DB.Model(&models.User{}).Count(&total)
+
+	// 查询当前页用户列表
+	result := global.DB.Order("id DESC").Offset(offset).Limit(pageSize).Find(&users)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "查询用户列表失败"})
+		return
+	}
+
+	// 计算总页数
+	totalPages := int((total + int64(pageSize) - 1) / int64(pageSize))
+	pagination := tools.Pagination{
+		CurrentPage: page,
+		TotalPages:  totalPages,
+		PageSize:    pageSize,
+		BasePath:    "/admin/users",
+	}
+	pagination.CalculateDisplayPages(7)
+
 	c.HTML(200, "admin-users.html", gin.H{
 		"CurrentPath": c.Request.URL.Path,
+		"users":       users,
+		"Pagination":  pagination,
 	})
 }

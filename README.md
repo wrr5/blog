@@ -10,25 +10,25 @@ Done:
 - 文章是否公开(不公开为仅自己可见)
 - 管理员后台
     - 分类管理
-    - // 用户管理
+    - 用户管理
 - 评论系统
-- 全文搜索功能(使用 Elasticsearch 或数据库全文索引)
+- 全文搜索功能(使用数据库全文索引)
 
-// refactor: 按照Web标准化三层架构进行重构index页面结构
-
+feat：实现用户管理模块
 Todo:
 - 阅读数，点赞数，评论数统计
+- 基于 Elasticsearch 提供全文搜索接口
 - API文档生成
 
 
 ## 介绍
 基于Golang的Gin框架和Gorm框架实现
 Bootstrap前端样式
-MySQL数据存储
+MySQL数据存储与Reids缓存
+集成protobuf与gRPC构建微服务，用于内部调用 
 
 
-## 安装教程
-
+## Linux Installation
 1.  更新系统包: 
 sudo apt update && sudo apt upgrade -y
 2.  安装Go
@@ -40,30 +40,34 @@ source ~/.profile
 sudo apt install mysql-server -y
 4.  安装Git
 sudo apt install git -y
-5.  安装必要的构建工具
+5.  安装Redis
+sudo apt install redis-server -y
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+6.  安装必要的构建工具
 sudo apt install build-essential -y
-6.  安全安装MySQL
+7.  安全安装MySQL
 sudo mysql_secure_installation
-7.  登录MySQL
+8.  登录MySQL
 sudo mysql -u root -p
-8.  在MySQL中创建数据库和用户
+9.  在MySQL中创建数据库和用户
 CREATE DATABASE blog;
 CREATE USER 'blog_user'@'%' IDENTIFIED BY '123456';
 GRANT ALL PRIVILEGES ON blog.* TO 'blog_user'@'%';
 FLUSH PRIVILEGES;
 EXIT;
-9.  克隆项目代码
+10.  克隆项目代码
 git clone https://github.com/wrr5/blog.git
 cd blog
-10. 安装Go依赖
+11. 安装Go依赖
 go mod tidy
-11. 构建应用（生产环境建议禁用调试信息和优化二进制大小）
+12. 构建应用（生产环境建议禁用调试信息和优化二进制大小）
 go build -ldflags="-w -s" -o main
-12. 测试运行
+13. 测试运行
 ./main
-13. 创建systemd服务文件，让应用在后台运行并自动重启
+14. 创建systemd服务文件，让应用在后台运行并自动重启
 sudo nano /etc/systemd/system/blog.service
-14. 文件内容
+文件内容:
 [Unit]
 Description=Gin GORM Application
 After=mysql.service
@@ -84,7 +88,7 @@ sudo systemctl enable blog.service
 sudo systemctl start blog.service
 sudo systemctl status blog.service  # 检查状态
 sudo systemctl stop blog.service # 停止服务
-16. 查看虚拟机ip
+17. 查看虚拟机ip
 ip addr show
 
 ## 更新项目
@@ -102,8 +106,7 @@ sudo systemctl restart gin-app.service
 sudo systemctl status gin-app.service
 
 
-## 使用说明
-
+## Windows交叉编译构建Linux应用
 $env:GOOS="linux"
 $env:GOARCH="amd64" 
 $env:CGO_ENABLED="0"

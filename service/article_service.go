@@ -5,6 +5,10 @@ import (
 	"gitee.com/wwgzr/blog/models"
 )
 
+// type ArticleService interface {
+//     GetHomePageData(userID, categoryID uint, page, pageSize int) ([]models.Article, int64, []models.Category, error)
+// }
+
 type ArticleService struct {
 	articleDao  *dao.ArticleDao
 	categoryDao *dao.CategoryDao
